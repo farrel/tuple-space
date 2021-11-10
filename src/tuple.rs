@@ -1,6 +1,7 @@
 use crate::types::Types;
+use serde::{Deserialize, Serialize};
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Serialize, Deserialize)]
 pub struct Tuple {
     inner: Vec<Types>,
 }
@@ -36,9 +37,24 @@ impl TupleBuilder {
     }
 }
 
+impl std::ops::Index<usize> for Tuple {
+    type Output = Types;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.inner[index]
+    }
+}
+
 #[test]
 fn test_builder() {
     let tuple = Tuple::builder().add_integer(5).build();
 
     assert_eq!(1, tuple.len());
+
+    let tuple = Tuple::builder()
+        .add_integer(1)
+        .add_integer(2)
+        .add_integer(3)
+        .build();
+    assert_eq!(3, tuple.len());
 }

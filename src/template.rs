@@ -1,13 +1,15 @@
+use crate::tuple::Tuple;
 use crate::types::Types;
+use serde::{Deserialize, Serialize};
 
-#[derive(PartialEq, Debug)]
-pub enum Template {
+#[derive(PartialEq, Debug, Serialize, Deserialize)]
+pub enum TypeTemplate {
     IntegerType,
     Integer(usize),
 }
 
-impl Template {
-    pub(crate) fn partial_eq_integer_type(&self, rhs: &Types) -> bool {
+impl TypeTemplate {
+    fn partial_eq_integer_type(&self, rhs: &Types) -> bool {
         if let Types::Integer(_n) = rhs {
             true
         } else {
@@ -15,8 +17,8 @@ impl Template {
         }
     }
 
-    pub(crate) fn partial_eq_integer(&self, rhs: &Types) -> bool {
-        if let Template::Integer(template_value) = self {
+    fn partial_eq_integer(&self, rhs: &Types) -> bool {
+        if let TypeTemplate::Integer(template_value) = self {
             if let Types::Integer(type_value) = rhs {
                 template_value == type_value
             } else {
@@ -28,7 +30,7 @@ impl Template {
     }
 }
 
-impl PartialEq<Types> for Template {
+impl PartialEq<Types> for TypeTemplate {
     fn eq(&self, rhs: &Types) -> bool {
         match self {
             Self::IntegerType => self.partial_eq_integer_type(rhs),
@@ -39,7 +41,103 @@ impl PartialEq<Types> for Template {
 
 #[test]
 fn test_integer_type() {
-    assert_eq!(Template::IntegerType, Types::Integer(1));
-    assert_eq!(Template::Integer(1), Types::Integer(1));
-    //assert_ne!(Template::Integer(1), Types::Integer(2));
+    assert_eq!(TypeTemplate::IntegerType, Types::Integer(1));
+    assert_eq!(TypeTemplate::Integer(1), Types::Integer(1));
+    assert_ne!(TypeTemplate::Integer(1), Types::Integer(2));
+}
+
+#[derive(PartialEq, Debug, Serialize, Deserialize)]
+pub struct TupleTemplate {
+    inner: Vec<TypeTemplate>,
+}
+
+impl TupleTemplate {
+    pub fn len(&self) -> usize {
+        self.inner.len()
+    }
+
+    pub fn builder() -> TupleTemplateBuilder {
+        TupleTemplateBuilder::new()
+    }
+}
+
+impl std::ops::Index<usize> for TupleTemplate {
+    type Output = TypeTemplate;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.inner[index]
+    }
+}
+
+impl PartialEq<Tuple> for TupleTemplate {
+    fn eq(&self, rhs: &Tuple) -> bool {
+        if self.len() != rhs.len() {
+            return false;
+        }
+        let mut index = 0;
+        let size = self.len();
+
+        while index < size {
+            if self[index] != rhs[index] {
+                return false;
+            }
+            index += 1;
+        }
+        true
+    }
+}
+
+pub struct TupleTemplateBuilder {
+    inner: Vec<TypeTemplate>,
+}
+
+impl TupleTemplateBuilder {
+    pub fn new() -> Self {
+        Self { inner: Vec::new() }
+    }
+
+    pub fn build(self) -> TupleTemplate {
+        let TupleTemplateBuilder { inner } = self;
+        TupleTemplate { inner }
+    }
+
+    pub fn add_integer(mut self, integer: usize) -> Self {
+        self.inner.push(TypeTemplate::Integer(integer));
+        self
+    }
+
+    pub fn add_integer_type(mut self) -> Self {
+        self.inner.push(TypeTemplate::IntegerType);
+        self
+    }
+}
+
+#[test]
+fn test_tuple_template() {
+    let tuple = Tuple::builder().add_integer(5).add_integer(2).build();
+
+    let tuple_template = TupleTemplate::builder()
+        .add_integer(5)
+        .add_integer(2)
+        .build();
+
+    assert_eq!(tuple_template, tuple);
+
+    let tuple_template = TupleTemplate::builder()
+        .add_integer_type()
+        .add_integer_type()
+        .build();
+    assert_eq!(tuple_template, tuple);
+
+    let tuple_template = TupleTemplate::builder()
+        .add_integer(5)
+        .add_integer_type()
+        .build();
+    assert_eq!(tuple_template, tuple);
+
+    let tuple_template = TupleTemplate::builder().add_integer(5).build();
+    assert_ne!(tuple_template, tuple);
+
+    let tuple_template = TupleTemplate::builder().build();
+    assert_ne!(tuple_template, tuple);
 }
