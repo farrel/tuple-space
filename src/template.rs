@@ -6,11 +6,14 @@ use serde::{Deserialize, Serialize};
 pub enum TypeTemplate {
     IntegerType,
     Integer(usize),
+    FloatType,
+    Float(f64),
+    Any,
 }
 
 impl TypeTemplate {
     fn partial_eq_integer_type(&self, rhs: &Types) -> bool {
-        if let Types::Integer(_n) = rhs {
+        if let Types::Integer(_) = rhs {
             true
         } else {
             false
@@ -28,6 +31,26 @@ impl TypeTemplate {
             false
         }
     }
+
+    fn partial_eq_float_type(&self, rhs: &Types) -> bool {
+        if let Types::Float(_) = rhs {
+            true
+        } else {
+            false
+        }
+    }
+
+    fn partial_eq_float(&self, rhs: &Types) -> bool {
+        if let TypeTemplate::Float(template_value) = self {
+            if let Types::Float(type_value) = rhs {
+                template_value == type_value
+            } else {
+                false
+            }
+        } else {
+            false
+        }
+    }
 }
 
 impl PartialEq<Types> for TypeTemplate {
@@ -35,6 +58,9 @@ impl PartialEq<Types> for TypeTemplate {
         match self {
             Self::IntegerType => self.partial_eq_integer_type(rhs),
             Self::Integer(_) => self.partial_eq_integer(rhs),
+            Self::FloatType => self.partial_eq_float_type(rhs),
+            Self::Float(_) => self.partial_eq_float(rhs),
+            Self::Any => true,
         }
     }
 }
@@ -44,6 +70,10 @@ fn test_integer_type() {
     assert_eq!(TypeTemplate::IntegerType, Types::Integer(1));
     assert_eq!(TypeTemplate::Integer(1), Types::Integer(1));
     assert_ne!(TypeTemplate::Integer(1), Types::Integer(2));
+
+    assert_eq!(TypeTemplate::FloatType, Types::Float(1.0));
+    assert_eq!(TypeTemplate::Float(1.0), Types::Float(1.0));
+    assert_ne!(TypeTemplate::Float(1.0), Types::Float(2.0));
 }
 
 #[derive(PartialEq, Debug, Serialize, Deserialize)]
@@ -110,6 +140,11 @@ impl TupleTemplateBuilder {
         self.inner.push(TypeTemplate::IntegerType);
         self
     }
+
+    pub fn add_any(mut self) -> Self {
+        self.inner.push(TypeTemplate::Any);
+        self
+    }
 }
 
 #[test]
@@ -133,6 +168,9 @@ fn test_tuple_template() {
         .add_integer(5)
         .add_integer_type()
         .build();
+    assert_eq!(tuple_template, tuple);
+
+    let tuple_template = TupleTemplate::builder().add_integer(5).add_any().build();
     assert_eq!(tuple_template, tuple);
 
     let tuple_template = TupleTemplate::builder().add_integer(5).build();

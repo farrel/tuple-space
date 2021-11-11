@@ -1,7 +1,7 @@
 use crate::types::Types;
 use serde::{Deserialize, Serialize};
 
-#[derive(PartialEq, Debug, Serialize, Deserialize)]
+#[derive(PartialEq, Debug, Serialize, Deserialize, Clone)]
 pub struct Tuple {
     inner: Vec<Types>,
 }
