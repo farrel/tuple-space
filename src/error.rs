@@ -1,5 +1,6 @@
 use crate::store::Store;
 
+#[derive(Debug)]
 pub enum Error {
     MutexPoisonError,
 }

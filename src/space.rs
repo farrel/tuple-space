@@ -15,7 +15,7 @@ impl Space {
         Ok(self.store.lock()?.len())
     }
 
-    pub fn read(&self, template: TupleTemplate) -> Result<Option<Tuple>> {
+    pub fn read(&self, template: &TupleTemplate) -> Result<Option<Tuple>> {
         Ok(self.store.lock()?.read(template))
     }
 
@@ -23,7 +23,7 @@ impl Space {
         Ok(self.store.lock()?.write(tuple))
     }
 
-    pub fn take(&mut self, template: TupleTemplate) -> Result<Option<Tuple>> {
+    pub fn take(&mut self, template: &TupleTemplate) -> Result<Option<Tuple>> {
         Ok(self.store.lock()?.take(template))
     }
 }
@@ -37,33 +37,38 @@ fn test_space() -> Result<()> {
 
     assert_eq!(2, tuple_space.len()?);
 
-    let test_thread = thread::spawn(|| {
-        match tuple_space.read(TupleTemplate::builder().add_integer(2).build())? {
-            Some(tuple) => (),
-            None => panic!("No tuple found"),
+    let mut thread_tuple_space = tuple_space.clone();
+    let test_thread = thread::spawn(move || {
+        match thread_tuple_space.read(&TupleTemplate::builder().add_integer(2).build()) {
+            Ok(Some(tuple)) => (),
+            _ => panic!("No tuple found"),
         }
     });
 
     assert_eq!(2, tuple_space.len()?);
 
-    match tuple_space.take(TupleTemplate::builder().add_integer(5).build())? {
+    let exact_template = TupleTemplate::builder().add_integer(5).build();
+    let wildcard_template = TupleTemplate::builder().add_integer_type().build();
+
+    match tuple_space.take(&exact_template)? {
         Some(tuple) => (),
         None => panic!("No tuple found"),
     }
 
     assert_eq!(1, tuple_space.len()?);
 
-    match tuple_space.take(TupleTemplate::builder().add_integer_type().build())? {
+    match tuple_space.take(&wildcard_template)? {
         Some(tuple) => (),
         None => panic!("No tuple found"),
     }
 
     assert_eq!(0, tuple_space.len()?);
 
-    match tuple_space.take(TupleTemplate::builder().add_integer_type().build())? {
+    match tuple_space.take(&wildcard_template)? {
         Some(tuple) => panic!("Tuple found"),
         None => (),
     }
 
     test_thread.join();
+    Ok(())
 }

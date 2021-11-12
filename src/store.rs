@@ -11,10 +11,10 @@ impl Store {
         self.inner.len()
     }
 
-    fn index(&self, template: TupleTemplate) -> Option<usize> {
+    fn index(&self, template: &TupleTemplate) -> Option<usize> {
         let mut index = 0;
         while index < self.len() {
-            if template == self.inner[index] {
+            if *template == self.inner[index] {
                 return Some(index);
             }
             index += 1;
@@ -22,7 +22,7 @@ impl Store {
         None
     }
 
-    pub fn read(&self, template: TupleTemplate) -> Option<Tuple> {
+    pub fn read(&self, template: &TupleTemplate) -> Option<Tuple> {
         match self.index(template) {
             Some(index) => Some(self.inner[index].clone()),
             None => None,
@@ -33,7 +33,7 @@ impl Store {
         self.inner.push(tuple)
     }
 
-    pub fn take(&mut self, template: TupleTemplate) -> Option<Tuple> {
+    pub fn take(&mut self, template: &TupleTemplate) -> Option<Tuple> {
         match self.index(template) {
             Some(index) => Some(self.inner.swap_remove(index)),
             None => None,
