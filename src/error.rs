@@ -5,8 +5,11 @@ pub enum Error {
     MutexPoisonError,
 }
 
-impl From<std::sync::PoisonError<std::sync::MutexGuard<'_, Store>>> for Error {
-    fn from(_error: std::sync::PoisonError<std::sync::MutexGuard<'_, Store>>) -> Error {
+impl<S> From<std::sync::PoisonError<std::sync::MutexGuard<'_, S>>> for Error
+where
+    S: Store,
+{
+    fn from(_error: std::sync::PoisonError<std::sync::MutexGuard<'_, S>>) -> Error {
         Error::MutexPoisonError
     }
 }

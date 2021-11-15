@@ -5,11 +5,13 @@ use std::{thread, time};
 
 use tuple_space::error::Error;
 use tuple_space::space::Space;
+use tuple_space::store::Store;
 use tuple_space::tuple::Tuple;
+use tuple_space::vec_store::VecStore;
 
 fn main() {
     println!("Starting");
-    let mut tuple_space = Space::default();
+    let mut tuple_space = Space::<VecStore>::default();
 
     let mut writer_tuple_space = tuple_space.clone();
     let writer_1_thread: JoinHandle<Result<(), Error>> = thread::spawn(move || {
