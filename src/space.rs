@@ -1,15 +1,14 @@
 use crate::result::Result;
 use crate::store::Store;
 use crate::tuple::Tuple;
-use crate::vec_store::VecStore;
 use std::sync::{Arc, Mutex};
 
 #[derive(Clone)]
-pub struct Space<S: Store + Default> {
+pub struct Space<S: Store> {
     store: Arc<Mutex<S>>,
 }
 
-impl<S: Store + Default> Default for Space<S> {
+impl<S: Store> Default for Space<S> {
     fn default() -> Space<S> {
         Space {
             store: Arc::new(Mutex::new(S::default())),
@@ -17,11 +16,7 @@ impl<S: Store + Default> Default for Space<S> {
     }
 }
 
-impl<S: Store + Default> Space<S> {
-    pub fn builder() -> SpaceBuilder<S> {
-        SpaceBuilder::default()
-    }
-
+impl<S: Store> Space<S> {
     pub fn len(&self) -> Result<usize> {
         Ok(self.store.lock()?.len())
     }
@@ -39,27 +34,11 @@ impl<S: Store + Default> Space<S> {
     }
 }
 
-#[derive(Default)]
-pub struct SpaceBuilder<S>
-where
-    S: Store,
-{
-    store: Option<S>,
-}
-
-impl<S> SpaceBuilder<S>
-where
-    S: Store,
-{
-    pub fn add_store(mut self, store: S) -> SpaceBuilder<S> {
-        self.store.replace(store);
-        self
-    }
-}
-
 #[test]
 fn test_space() -> Result<()> {
+    use crate::vec_store::VecStore;
     use std::thread;
+
     let mut tuple_space = Space::<VecStore>::default();
 
     tuple_space.write(&Tuple::builder().add_integer(5).build());
