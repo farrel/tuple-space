@@ -48,10 +48,7 @@ fn main() {
     let mut reader_tuple_space = tuple_space.clone();
     let reader_thread: JoinHandle<Result<()>> = thread::spawn(move || {
         println!("Spawning Reader");
-        let template = Tuple::builder()
-            .add_integer_type()
-            .add_integer_type()
-            .build();
+        let template = Tuple::builder().add_any().add_any().build();
         let reader_sleep = time::Duration::from_millis(500);
 
         while reader_tuple_space.len()? > 0 {
