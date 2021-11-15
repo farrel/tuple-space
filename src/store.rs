@@ -1,3 +1,4 @@
+use crate::result::Result;
 use crate::tuple::Tuple;
 
 #[derive(Default)]
@@ -28,8 +29,9 @@ impl Store {
         }
     }
 
-    pub fn write(&mut self, tuple: Tuple) {
-        self.inner.push(tuple)
+    pub fn write(&mut self, tuple: &Tuple) -> Result<()> {
+        self.inner.push((*tuple).clone());
+        Ok(())
     }
 
     pub fn take(&mut self, template: &Tuple) -> Option<Tuple> {
@@ -44,8 +46,8 @@ impl Store {
 fn test_store() {
     let mut tuple_store = Store::default();
 
-    tuple_store.write(Tuple::builder().add_integer(5).build());
-    tuple_store.write(Tuple::builder().add_integer(2).build());
+    tuple_store.write(&Tuple::builder().add_integer(5).build());
+    tuple_store.write(&Tuple::builder().add_integer(2).build());
 
     assert_eq!(2, tuple_store.len());
 

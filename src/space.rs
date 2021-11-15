@@ -17,8 +17,8 @@ impl Space {
         Ok(self.store.lock()?.read(template))
     }
 
-    pub fn write(&mut self, tuple: Tuple) -> Result<()> {
-        Ok(self.store.lock()?.write(tuple))
+    pub fn write(&mut self, tuple: &Tuple) -> Result<()> {
+        Ok(self.store.lock()?.write(tuple)?)
     }
 
     pub fn take(&mut self, template: &Tuple) -> Result<Option<Tuple>> {
@@ -31,8 +31,8 @@ fn test_space() -> Result<()> {
     use std::thread;
     let mut tuple_space = Space::default();
 
-    tuple_space.write(Tuple::builder().add_integer(5).build());
-    tuple_space.write(Tuple::builder().add_integer(2).build());
+    tuple_space.write(&Tuple::builder().add_integer(5).build());
+    tuple_space.write(&Tuple::builder().add_integer(2).build());
 
     assert_eq!(2, tuple_space.len()?);
 

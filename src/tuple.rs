@@ -14,6 +14,10 @@ impl Tuple {
     pub fn len(&self) -> usize {
         self.inner.len()
     }
+
+    pub fn writable(&self) -> bool {
+        self.inner.iter().all(|t| t.is_concrete())
+    }
 }
 
 pub struct TupleBuilder {

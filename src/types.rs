@@ -24,6 +24,13 @@ impl Types {
             _ => false,
         }
     }
+
+    pub fn is_concrete(&self) -> bool {
+        match self {
+            Types::Any | Types::AnyInteger | Types::AnyFloat => false,
+            _ => true,
+        }
+    }
 }
 
 impl PartialEq for Types {
