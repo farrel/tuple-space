@@ -62,7 +62,6 @@ impl PartialEq for Tuple {
                 return false;
             }
         }
-
         true
     }
 }
