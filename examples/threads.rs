@@ -3,7 +3,7 @@ extern crate tuple_space;
 use std::thread::JoinHandle;
 use std::{thread, time};
 
-use tuple_space::error::Error;
+use tuple_space::result::Result;
 use tuple_space::space::Space;
 use tuple_space::store::Store;
 use tuple_space::tuple::Tuple;
@@ -14,12 +14,13 @@ fn main() {
     let mut tuple_space = Space::<VecStore>::default();
 
     let mut writer_tuple_space = tuple_space.clone();
-    let writer_1_thread: JoinHandle<Result<(), Error>> = thread::spawn(move || {
+    let writer_1_thread: JoinHandle<Result<()>> = thread::spawn(move || {
+        println!("Spawning Writer 1");
         let writer_sleep = time::Duration::from_millis(100);
 
         for i in 0..100 {
             let tuple = Tuple::builder().add_integer(1).add_integer(i).build();
-            println!("Writer 1 wrote: {:?}", tuple);
+            println!("Writer 1: Wrote: {:?}", tuple);
             writer_tuple_space.write(&tuple)?;
             thread::sleep(writer_sleep);
         }
@@ -28,12 +29,13 @@ fn main() {
     });
 
     let mut writer_tuple_space = tuple_space.clone();
-    let writer_2_thread: JoinHandle<Result<(), Error>> = thread::spawn(move || {
+    let writer_2_thread: JoinHandle<Result<()>> = thread::spawn(move || {
+        println!("Spawning Writer 2");
         let writer_sleep = time::Duration::from_millis(100);
 
         for i in 0..100 {
             let tuple = Tuple::builder().add_integer(2).add_integer(i).build();
-            println!("Writer 2 wrote: {:?}", tuple);
+            println!("Writer 2: Wrote: {:?}", tuple);
             writer_tuple_space.write(&tuple)?;
             thread::sleep(writer_sleep);
         }
@@ -44,7 +46,8 @@ fn main() {
     thread::sleep(time::Duration::from_millis(200));
 
     let mut reader_tuple_space = tuple_space.clone();
-    let reader_thread: JoinHandle<Result<(), Error>> = thread::spawn(move || {
+    let reader_thread: JoinHandle<Result<()>> = thread::spawn(move || {
+        println!("Spawning Reader");
         let template = Tuple::builder()
             .add_integer_type()
             .add_integer_type()
@@ -52,7 +55,7 @@ fn main() {
         let reader_sleep = time::Duration::from_millis(500);
 
         while reader_tuple_space.len()? > 0 {
-            println!("Reader read: {:?}", reader_tuple_space.read(&template)?);
+            println!("Reader: Read: {:?}", reader_tuple_space.read(&template)?);
             thread::sleep(reader_sleep);
         }
 
@@ -61,7 +64,8 @@ fn main() {
     });
 
     let mut taker_tuple_space = tuple_space.clone();
-    let taker_thread: JoinHandle<Result<(), Error>> = thread::spawn(move || {
+    let taker_thread: JoinHandle<Result<()>> = thread::spawn(move || {
+        println!("Spawning Taker");
         let template = Tuple::builder()
             .add_integer_type()
             .add_integer_type()
@@ -69,7 +73,7 @@ fn main() {
         let taker_sleep = time::Duration::from_millis(110);
 
         while taker_tuple_space.len()? > 0 {
-            println!("Taker took: {:?}", taker_tuple_space.take(&template)?);
+            println!("Taker: Took: {:?}", taker_tuple_space.take(&template)?);
             thread::sleep(taker_sleep);
         }
 
