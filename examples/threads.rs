@@ -5,7 +5,6 @@ use std::{thread, time};
 
 use tuple_space::error::Error;
 use tuple_space::space::Space;
-use tuple_space::template::TupleTemplate;
 use tuple_space::tuple::Tuple;
 
 fn main() {
@@ -30,7 +29,7 @@ fn main() {
 
     let mut reader_tuple_space = tuple_space.clone();
     let reader_thread: JoinHandle<Result<(), Error>> = thread::spawn(move || {
-        let template = TupleTemplate::builder().add_integer_type().build();
+        let template = Tuple::builder().add_integer_type().build();
         let reader_sleep = time::Duration::from_millis(110);
 
         while tuple_space.len()? > 0 {

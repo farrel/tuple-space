@@ -1,9 +1,7 @@
 use crate::result::Result;
 use crate::store::Store;
-use crate::template::TupleTemplate;
 use crate::tuple::Tuple;
 use std::sync::{Arc, Mutex};
-use std::thread;
 
 #[derive(Default, Clone)]
 pub struct Space {
@@ -15,7 +13,7 @@ impl Space {
         Ok(self.store.lock()?.len())
     }
 
-    pub fn read(&self, template: &TupleTemplate) -> Result<Option<Tuple>> {
+    pub fn read(&self, template: &Tuple) -> Result<Option<Tuple>> {
         Ok(self.store.lock()?.read(template))
     }
 
@@ -23,13 +21,14 @@ impl Space {
         Ok(self.store.lock()?.write(tuple))
     }
 
-    pub fn take(&mut self, template: &TupleTemplate) -> Result<Option<Tuple>> {
+    pub fn take(&mut self, template: &Tuple) -> Result<Option<Tuple>> {
         Ok(self.store.lock()?.take(template))
     }
 }
 
 #[test]
 fn test_space() -> Result<()> {
+    use std::thread;
     let mut tuple_space = Space::default();
 
     tuple_space.write(Tuple::builder().add_integer(5).build());
@@ -39,7 +38,7 @@ fn test_space() -> Result<()> {
 
     let mut thread_tuple_space = tuple_space.clone();
     let test_thread = thread::spawn(move || {
-        match thread_tuple_space.read(&TupleTemplate::builder().add_integer(2).build()) {
+        match thread_tuple_space.read(&Tuple::builder().add_integer(2).build()) {
             Ok(Some(tuple)) => (),
             _ => panic!("No tuple found"),
         }
@@ -47,8 +46,8 @@ fn test_space() -> Result<()> {
 
     assert_eq!(2, tuple_space.len()?);
 
-    let exact_template = TupleTemplate::builder().add_integer(5).build();
-    let wildcard_template = TupleTemplate::builder().add_integer_type().build();
+    let exact_template = Tuple::builder().add_integer(5).build();
+    let wildcard_template = Tuple::builder().add_integer_type().build();
 
     match tuple_space.take(&exact_template)? {
         Some(tuple) => (),

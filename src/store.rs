@@ -1,4 +1,3 @@
-use crate::template::TupleTemplate;
 use crate::tuple::Tuple;
 
 #[derive(Default)]
@@ -11,7 +10,7 @@ impl Store {
         self.inner.len()
     }
 
-    fn index(&self, template: &TupleTemplate) -> Option<usize> {
+    fn index(&self, template: &Tuple) -> Option<usize> {
         let mut index = 0;
         while index < self.len() {
             if *template == self.inner[index] {
@@ -22,7 +21,7 @@ impl Store {
         None
     }
 
-    pub fn read(&self, template: &TupleTemplate) -> Option<Tuple> {
+    pub fn read(&self, template: &Tuple) -> Option<Tuple> {
         match self.index(template) {
             Some(index) => Some(self.inner[index].clone()),
             None => None,
@@ -33,7 +32,7 @@ impl Store {
         self.inner.push(tuple)
     }
 
-    pub fn take(&mut self, template: &TupleTemplate) -> Option<Tuple> {
+    pub fn take(&mut self, template: &Tuple) -> Option<Tuple> {
         match self.index(template) {
             Some(index) => Some(self.inner.swap_remove(index)),
             None => None,
@@ -50,28 +49,28 @@ fn test_store() {
 
     assert_eq!(2, tuple_store.len());
 
-    match tuple_store.read(TupleTemplate::builder().add_integer(2).build()) {
+    match tuple_store.read(&Tuple::builder().add_integer(2).build()) {
         Some(_tuple) => (),
         None => panic!("No tuple found"),
     }
 
     assert_eq!(2, tuple_store.len());
 
-    match tuple_store.take(TupleTemplate::builder().add_integer(5).build()) {
+    match tuple_store.take(&Tuple::builder().add_integer(5).build()) {
         Some(_tuple) => (),
         None => panic!("No tuple found"),
     }
 
     assert_eq!(1, tuple_store.len());
 
-    match tuple_store.take(TupleTemplate::builder().add_integer_type().build()) {
+    match tuple_store.take(&Tuple::builder().add_integer_type().build()) {
         Some(_tuple) => (),
         None => panic!("No tuple found"),
     }
 
     assert_eq!(0, tuple_store.len());
 
-    match tuple_store.take(TupleTemplate::builder().add_integer_type().build()) {
+    match tuple_store.take(&Tuple::builder().add_integer_type().build()) {
         Some(_tuple) => panic!("Tuple found"),
         None => (),
     }
