@@ -13,14 +13,14 @@ pub enum Types {
 }
 
 impl Types {
-    fn satisfy(&self, rhs: &Types, swapped: bool) -> bool {
+    fn satisfy(&self, rhs: &Types, comparison: bool) -> bool {
         match (self, rhs) {
             (Types::Any, _) => true,
             (Types::AnyInteger, Types::Integer(_)) => true,
             (Types::Integer(n_1), Types::Integer(n_2)) => n_1 == n_2,
             (Types::AnyFloat, Types::Float(_)) => true,
             (Types::Float(f_1), Types::Float(f_2)) => f_1 == f_2,
-            _ if swapped == FIRST_COMPARISON => rhs.satisfy(self, SWAPPED_COMPARISON),
+            _ if comparison == FIRST_COMPARISON => rhs.satisfy(self, SWAPPED_COMPARISON),
             _ => false,
         }
     }

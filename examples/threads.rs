@@ -19,7 +19,7 @@ fn main() {
 
         for i in 0..100 {
             let tuple = Tuple::builder().add_integer(1).add_integer(i).build();
-            println!("Writer 1 Wrote: {:?}", tuple);
+            println!("Writer 1 wrote: {:?}", tuple);
             writer_tuple_space.write(&tuple)?;
             thread::sleep(writer_sleep);
         }
@@ -33,7 +33,7 @@ fn main() {
 
         for i in 0..100 {
             let tuple = Tuple::builder().add_integer(2).add_integer(i).build();
-            println!("Writer  2 Wrote: {:?}", tuple);
+            println!("Writer 2 wrote: {:?}", tuple);
             writer_tuple_space.write(&tuple)?;
             thread::sleep(writer_sleep);
         }
@@ -49,19 +49,37 @@ fn main() {
             .add_integer_type()
             .add_integer_type()
             .build();
-        let reader_sleep = time::Duration::from_millis(110);
+        let reader_sleep = time::Duration::from_millis(500);
 
-        while tuple_space.len()? > 0 {
-            println!("Reader Took: {:?}", reader_tuple_space.take(&template)?);
+        while reader_tuple_space.len()? > 0 {
+            println!("Reader read: {:?}", reader_tuple_space.read(&template)?);
             thread::sleep(reader_sleep);
         }
 
-        println!("Tuple space empty!");
+        println!("Reader: Tuple space empty!");
+        Ok(())
+    });
+
+    let mut taker_tuple_space = tuple_space.clone();
+    let taker_thread: JoinHandle<Result<(), Error>> = thread::spawn(move || {
+        let template = Tuple::builder()
+            .add_integer_type()
+            .add_integer_type()
+            .build();
+        let taker_sleep = time::Duration::from_millis(110);
+
+        while taker_tuple_space.len()? > 0 {
+            println!("Taker took: {:?}", taker_tuple_space.take(&template)?);
+            thread::sleep(taker_sleep);
+        }
+
+        println!("Taker: Tuple space empty!");
         Ok(())
     });
 
     writer_1_thread.join();
     writer_2_thread.join();
+    taker_thread.join();
     reader_thread.join();
 
     println!("Finished");
