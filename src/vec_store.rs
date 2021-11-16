@@ -8,7 +8,7 @@ pub struct VecStore {
 }
 
 impl VecStore {
-    fn index(&self, template: &Tuple) -> Option<usize> {
+    fn index_of(&self, template: &Tuple) -> Option<usize> {
         let mut index = 0;
         while index < self.len() {
             if *template == self.inner[index] {
@@ -26,7 +26,7 @@ impl Store for VecStore {
     }
 
     fn read(&self, template: &Tuple) -> Option<Tuple> {
-        match self.index(template) {
+        match self.index_of(template) {
             Some(index) => Some(self.inner[index].clone()),
             None => None,
         }
@@ -38,7 +38,7 @@ impl Store for VecStore {
     }
 
     fn take(&mut self, template: &Tuple) -> Option<Tuple> {
-        match self.index(template) {
+        match self.index_of(template) {
             Some(index) => Some(self.inner.swap_remove(index)),
             None => None,
         }
