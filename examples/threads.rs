@@ -48,21 +48,24 @@ fn main() {
     let mut reader_tuple_space = tuple_space.clone();
     let reader_thread: JoinHandle<Result<()>> = thread::spawn(move || {
         println!("Spawning Reader");
+        let mut num_tuples = 0;
         let template = Tuple::builder().add_any().add_any().build();
         let reader_sleep = time::Duration::from_millis(500);
 
         while reader_tuple_space.len()? > 0 {
             println!("Reader: Read: {:?}", reader_tuple_space.read(&template)?);
+            num_tuples += 1;
             thread::sleep(reader_sleep);
         }
 
-        println!("Reader: Tuple space empty!");
+        println!("Reader: Tuple space empty! I read {} tuples.", num_tuples);
         Ok(())
     });
 
     let mut taker_tuple_space = tuple_space.clone();
     let taker_thread: JoinHandle<Result<()>> = thread::spawn(move || {
         println!("Spawning Taker");
+        let mut num_tuples = 0;
         let template = Tuple::builder()
             .add_integer_type()
             .add_integer_type()
@@ -71,10 +74,11 @@ fn main() {
 
         while taker_tuple_space.len()? > 0 {
             println!("Taker: Took: {:?}", taker_tuple_space.take(&template)?);
+            num_tuples += 1;
             thread::sleep(taker_sleep);
         }
 
-        println!("Taker: Tuple space empty!");
+        println!("Taker: Tuple space empty! I took {} tuples.", num_tuples);
         Ok(())
     });
 
