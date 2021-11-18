@@ -16,21 +16,21 @@ impl<S: Store> Default for Space<S> {
     }
 }
 
-impl<S: Store> Space<S> {
-    pub fn len(&self) -> Result<usize> {
-        Ok(self.store.lock()?.len())
+impl<S: Store> Store for Space<S> {
+    fn len(&self) -> Result<usize> {
+        self.store.lock()?.len()
     }
 
-    pub fn read(&self, template: &Tuple) -> Result<Option<Tuple>> {
-        Ok(self.store.lock()?.read(template))
+    fn read(&self, template: &Tuple) -> Result<Option<Tuple>> {
+        self.store.lock()?.read(template)
     }
 
-    pub fn write(&mut self, tuple: &Tuple) -> Result<()> {
-        Ok(self.store.lock()?.write(tuple)?)
+    fn write(&mut self, tuple: &Tuple) -> Result<()> {
+        self.store.lock()?.write(tuple)
     }
 
-    pub fn take(&mut self, template: &Tuple) -> Result<Option<Tuple>> {
-        Ok(self.store.lock()?.take(template))
+    fn take(&mut self, template: &Tuple) -> Result<Option<Tuple>> {
+        self.store.lock()?.take(template)
     }
 }
 

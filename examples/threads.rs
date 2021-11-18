@@ -24,21 +24,7 @@ fn main() {
             writer_tuple_space.write(&tuple)?;
             thread::sleep(writer_sleep);
         }
-
-        Ok(())
-    });
-
-    let mut writer_tuple_space = tuple_space.clone();
-    let writer_2_thread: JoinHandle<Result<()>> = thread::spawn(move || {
-        println!("Spawning Writer 2");
-        let writer_sleep = time::Duration::from_millis(100);
-
-        for i in 0..100 {
-            let tuple = Tuple::builder().add_integer(2).add_integer(i).build();
-            println!("Writer 2: Wrote: {:?}", tuple);
-            writer_tuple_space.write(&tuple)?;
-            thread::sleep(writer_sleep);
-        }
+        println!("Writer 1: Wrote 100 tuples");
 
         Ok(())
     });
@@ -52,8 +38,8 @@ fn main() {
         let template = Tuple::builder().add_any().add_any().build();
         let reader_sleep = time::Duration::from_millis(500);
 
-        while reader_tuple_space.len()? > 0 {
-            println!("Reader: Read: {:?}", reader_tuple_space.read(&template)?);
+        while let Some(tuple) = reader_tuple_space.read(&template)? {
+            println!("Reader: Read: {:?}", tuple);
             num_tuples += 1;
             thread::sleep(reader_sleep);
         }
@@ -72,13 +58,29 @@ fn main() {
             .build();
         let taker_sleep = time::Duration::from_millis(110);
 
-        while taker_tuple_space.len()? > 0 {
-            println!("Taker: Took: {:?}", taker_tuple_space.take(&template)?);
+        while let Some(tuple) = taker_tuple_space.take(&template)? {
+            println!("Taker: Took: {:?}", tuple);
             num_tuples += 1;
             thread::sleep(taker_sleep);
         }
 
         println!("Taker: Tuple space empty! I took {} tuples.", num_tuples);
+        Ok(())
+    });
+
+    let mut writer_tuple_space = tuple_space.clone();
+    let writer_2_thread: JoinHandle<Result<()>> = thread::spawn(move || {
+        println!("Spawning Writer 2");
+        let writer_sleep = time::Duration::from_millis(100);
+
+        for i in 0..100 {
+            let tuple = Tuple::builder().add_integer(2).add_integer(i).build();
+            println!("Writer 2: Wrote: {:?}", tuple);
+            writer_tuple_space.write(&tuple)?;
+            thread::sleep(writer_sleep);
+        }
+        println!("Writer 2: Wrote 100 tuples");
+
         Ok(())
     });
 
