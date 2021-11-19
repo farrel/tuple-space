@@ -7,14 +7,17 @@ pub struct Tuple {
 }
 
 impl Tuple {
+    /// Returns a [TupleBuilder]
     pub fn builder() -> TupleBuilder {
         TupleBuilder::new()
     }
 
+    /// The number of elements in the tuple.
     pub fn len(&self) -> usize {
         self.inner.len()
     }
 
+    /// A tuple is `concrete` if all it's tuples are not wild card [Types].
     pub fn is_concrete(&self) -> bool {
         self.inner.iter().all(|t| t.is_concrete())
     }
@@ -45,7 +48,7 @@ impl TupleBuilder {
         self
     }
 
-    pub fn add_integer(mut self, integer: usize) -> Self {
+    pub fn add_integer(mut self, integer: i64) -> Self {
         self.inner.push(Types::Integer(integer));
         self
     }

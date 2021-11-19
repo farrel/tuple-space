@@ -5,14 +5,19 @@ const SWAPPED_COMPARISON: bool = false;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum Types {
+    /// Wildcard matching any variant
     Any,
+    /// Wildcard type matching any [Types::Boolean] variant
     AnyBoolean,
-    Boolean(bool),
+    /// Wildcard type matching any [Types::Integer] variant
     AnyInteger,
-    Integer(usize),
+    /// Wildcard type matching any [Types::Float] variant
     AnyFloat,
-    Float(f64),
+    /// Wildcard type matching any [Types::String] variant
     AnyString,
+    Boolean(bool),
+    Integer(i64),
+    Float(f64),
     String(String),
 }
 
@@ -34,6 +39,8 @@ impl Types {
         }
     }
 
+    /// Will return true if the enum is not one of the following variants: [Types::Any],
+    /// [Types::AnyBoolean], [Types::AnyInteger], [Types::AnyFloat], [Types::AnyString].
     pub fn is_concrete(&self) -> bool {
         match self {
             Types::Any
