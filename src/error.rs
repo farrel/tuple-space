@@ -1,8 +1,10 @@
 use crate::store::Store;
+use crate::tuple::Tuple;
 
 #[derive(Debug)]
 pub enum Error {
     MutexPoisonError,
+    NonConcreteTuple(Tuple),
 }
 
 impl<S> From<std::sync::PoisonError<std::sync::MutexGuard<'_, S>>> for Error

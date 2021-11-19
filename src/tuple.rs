@@ -15,7 +15,7 @@ impl Tuple {
         self.inner.len()
     }
 
-    pub fn writable(&self) -> bool {
+    pub fn is_concrete(&self) -> bool {
         self.inner.iter().all(|t| t.is_concrete())
     }
 }
@@ -69,6 +69,16 @@ impl TupleBuilder {
         self.inner.push(Types::Boolean(boolean));
         self
     }
+
+    pub fn add_string_type(mut self) -> Self {
+        self.inner.push(Types::AnyString);
+        self
+    }
+
+    pub fn add_string(mut self, string: &str) -> Self {
+        self.inner.push(Types::String(String::from(string)));
+        self
+    }
 }
 
 impl PartialEq for Tuple {
@@ -97,7 +107,7 @@ impl std::ops::Index<usize> for Tuple {
 #[test]
 fn test_builder() {
     let tuple = Tuple::builder().add_integer(5).build();
-    assert!(tuple.writable());
+    assert!(tuple.is_concrete());
 
     assert_eq!(1, tuple.len());
 
@@ -109,9 +119,11 @@ fn test_builder() {
         .add_float(2.0)
         .add_boolean_type()
         .add_boolean(true)
+        .add_string("String")
+        .add_string_type()
         .build();
-    assert_eq!(7, tuple.len());
-    assert!(!tuple.writable());
+    assert_eq!(9, tuple.len());
+    assert!(!tuple.is_concrete());
 }
 
 #[test]

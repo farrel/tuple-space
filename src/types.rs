@@ -22,11 +22,13 @@ impl Types {
         match (self, rhs) {
             (Types::Any, _) => true,
             (Types::AnyBoolean, Types::Boolean(_)) => true,
-            (Types::Boolean(b_1), Types::Boolean(b_2)) => b_1 == b_2,
+            (Types::Boolean(lhs), Types::Boolean(rhs)) => lhs == rhs,
             (Types::AnyInteger, Types::Integer(_)) => true,
-            (Types::Integer(n_1), Types::Integer(n_2)) => n_1 == n_2,
+            (Types::Integer(lhs), Types::Integer(rhs)) => lhs == rhs,
             (Types::AnyFloat, Types::Float(_)) => true,
-            (Types::Float(f_1), Types::Float(f_2)) => f_1 == f_2,
+            (Types::Float(lhs), Types::Float(rhs)) => lhs == rhs,
+            (Types::AnyString, Types::String(_)) => true,
+            (Types::String(lhs), Types::String(rhs)) => lhs == rhs,
             _ if first_comparison => rhs.satisfy(self, SWAPPED_COMPARISON),
             _ => false,
         }
@@ -34,7 +36,11 @@ impl Types {
 
     pub fn is_concrete(&self) -> bool {
         match self {
-            Types::Any | Types::AnyBoolean | Types::AnyInteger | Types::AnyFloat => false,
+            Types::Any
+            | Types::AnyBoolean
+            | Types::AnyInteger
+            | Types::AnyFloat
+            | Types::AnyString => false,
             _ => true,
         }
     }
@@ -70,8 +76,17 @@ fn test_compare() {
     assert_ne!(f1, f2);
     assert_ne!(f1, i1);
 
+    let s1 = Types::String(String::from("S1"));
+    let s1_copy = Types::String(String::from("S1"));
+    let s2 = Types::String(String::from("S2"));
+
+    assert_eq!(s1, s1_copy);
+    assert_ne!(s1, s2);
+    assert_ne!(s1, f1);
+
     assert_eq!(i1, Types::Any);
     assert_eq!(b1, Types::AnyBoolean);
     assert_eq!(i1, Types::AnyInteger);
     assert_eq!(f1, Types::AnyFloat);
+    assert_eq!(s1, Types::AnyString);
 }
