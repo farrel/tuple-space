@@ -3,6 +3,22 @@ use crate::store::Store;
 use crate::tuple::Tuple;
 use std::sync::{Arc, Mutex};
 
+/// A [Space] is a store that uses another tuple store as internal
+/// storage.
+///
+/// The internal tuple store is encased in an [Arc]<[Mutex]<[Store]>> making the [Space] thread
+/// safe across clones.
+/// ```rust
+/// let space = Space::<VecStore>::default();
+/// let space_clone = space.clone();
+///
+/// let tuple = Tuple::builder.add_integer(1).build();
+///
+/// space.write(&tuple);
+/// space_clone.write(&tuple);
+/// println!("Tuples stored: {}", space.len());      // -> 2
+/// println!("Tuples stored: {}", space_clone.len()); // -> 2
+/// ```
 #[derive(Clone)]
 pub struct Space<S: Store> {
     store: Arc<Mutex<S>>,

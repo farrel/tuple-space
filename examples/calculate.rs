@@ -14,7 +14,7 @@ fn main() {
     // Create a tuple space withe a VecStore tuple store.
     let mut writer_tuple_space = Space::<VecStore>::default();
     // Create clones of the tuple space. The underlying VecStore is shared in a
-    // Arc<Mutexex<VecStore>>
+    // Arc<Mutex<VecStore>> and will the shared between the clones.
     let mut adder_tuple_space = writer_tuple_space.clone();
     let mut print_tuple_space = writer_tuple_space.clone();
 
