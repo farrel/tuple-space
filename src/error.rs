@@ -1,7 +1,8 @@
 use crate::store::Store;
 use crate::tuple::Tuple;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub enum Error {
     MutexPoisonError,
     NonConcreteTuple(Tuple),
