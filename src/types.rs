@@ -53,6 +53,23 @@ impl Types {
     }
 }
 
+impl std::fmt::Display for Types {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter) -> std::result::Result<(), std::fmt::Error> {
+        match self {
+            Types::Any => write!(formatter, "*")?,
+            Types::AnyBoolean => write!(formatter, "bool?")?,
+            Types::Boolean(boolean) => write!(formatter, "{}", boolean)?,
+            Types::AnyInteger => write!(formatter, "integer?")?,
+            Types::Integer(integer) => write!(formatter, "{}", integer)?,
+            Types::AnyFloat => write!(formatter, "{}", "float?")?,
+            Types::Float(float) => write!(formatter, "{}", float)?,
+            Types::AnyString => write!(formatter, "string?")?,
+            Types::String(string) => write!(formatter, "{}", string)?,
+        };
+        Ok(())
+    }
+}
+
 impl PartialEq for Types {
     fn eq(&self, rhs: &Types) -> bool {
         self.satisfy(rhs, FIRST_COMPARISON)

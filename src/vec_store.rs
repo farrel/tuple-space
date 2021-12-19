@@ -72,8 +72,8 @@ impl Default for VecStore {
 }
 
 impl Store for VecStore {
-    fn len(&self) -> Result<usize> {
-        Ok(self.tuple_count)
+    fn len(&self) -> usize {
+        self.tuple_count
     }
 
     fn read(&self, template: &Tuple) -> Result<Option<Tuple>> {
@@ -146,7 +146,7 @@ fn test_store() -> Result<()> {
     tuple_store.write(&Tuple::builder().add_integer(5).build());
     tuple_store.write(&Tuple::builder().add_integer(2).build());
 
-    assert_eq!(2, tuple_store.len()?);
+    assert_eq!(2, tuple_store.len());
     assert_eq!(2, tuple_store.tuple_count());
 
     match tuple_store.read(&Tuple::builder().add_integer(2).build())? {
@@ -154,7 +154,7 @@ fn test_store() -> Result<()> {
         None => panic!("No tuple found"),
     }
 
-    assert_eq!(2, tuple_store.len()?);
+    assert_eq!(2, tuple_store.len());
     assert_eq!(2, tuple_store.tuple_count());
 
     match tuple_store.take(&Tuple::builder().add_integer(5).build())? {
@@ -162,7 +162,7 @@ fn test_store() -> Result<()> {
         None => panic!("No tuple found"),
     }
 
-    assert_eq!(1, tuple_store.len()?);
+    assert_eq!(1, tuple_store.len());
     assert_eq!(1, tuple_store.tuple_count());
 
     match tuple_store.take(&Tuple::builder().add_integer_type().build())? {
@@ -170,14 +170,14 @@ fn test_store() -> Result<()> {
         None => panic!("No tuple found"),
     }
 
-    assert_eq!(0, tuple_store.len()?);
+    assert_eq!(0, tuple_store.len());
     assert_eq!(0, tuple_store.tuple_count());
 
     match tuple_store.take(&Tuple::builder().add_integer_type().build())? {
         Some(_tuple) => panic!("Tuple found"),
         None => (),
     }
-    assert_eq!(0, tuple_store.len()?);
+    assert_eq!(0, tuple_store.len());
     assert_eq!(0, tuple_store.tuple_count());
 
     Ok(())

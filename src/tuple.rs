@@ -23,6 +23,23 @@ impl Tuple {
     }
 }
 
+impl std::fmt::Display for Tuple {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter) -> std::result::Result<(), std::fmt::Error> {
+        write!(formatter, "(")?;
+        write!(
+            formatter,
+            "{}",
+            self.inner
+                .iter()
+                .map(|t| format!("{}", t))
+                .collect::<Vec<String>>()
+                .join(", ")
+        )?;
+        write!(formatter, ")")?;
+        Ok(())
+    }
+}
+
 pub struct TupleBuilder {
     inner: Vec<Types>,
 }

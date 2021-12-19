@@ -3,7 +3,7 @@ use crate::tuple::Tuple;
 
 pub trait Store: Default {
     /// The number of tuples in the store.
-    fn len(&self) -> Result<usize>;
+    fn len(&self) -> usize;
 
     /// Writes a tuple into the store.
     fn write(&mut self, tuple: &Tuple) -> Result<()>;
