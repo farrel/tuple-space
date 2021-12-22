@@ -57,13 +57,13 @@ impl std::fmt::Display for Types {
     fn fmt(&self, formatter: &mut std::fmt::Formatter) -> std::result::Result<(), std::fmt::Error> {
         match self {
             Types::Any => write!(formatter, "*")?,
-            Types::AnyBoolean => write!(formatter, "bool?")?,
+            Types::AnyBoolean => write!(formatter, "Boolean?")?,
             Types::Boolean(boolean) => write!(formatter, "{}", boolean)?,
-            Types::AnyInteger => write!(formatter, "integer?")?,
+            Types::AnyInteger => write!(formatter, "Integer?")?,
             Types::Integer(integer) => write!(formatter, "{}", integer)?,
-            Types::AnyFloat => write!(formatter, "{}", "float?")?,
+            Types::AnyFloat => write!(formatter, "{}", "Float?")?,
             Types::Float(float) => write!(formatter, "{}", float)?,
-            Types::AnyString => write!(formatter, "string?")?,
+            Types::AnyString => write!(formatter, "String?")?,
             Types::String(string) => write!(formatter, "{}", string)?,
         };
         Ok(())
