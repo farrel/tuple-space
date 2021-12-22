@@ -64,7 +64,7 @@ impl std::fmt::Display for Types {
             Types::AnyFloat => write!(formatter, "{}", "Float?")?,
             Types::Float(float) => write!(formatter, "{}", float)?,
             Types::AnyString => write!(formatter, "String?")?,
-            Types::String(string) => write!(formatter, "{}", string)?,
+            Types::String(string) => write!(formatter, "\"{}\"", string)?,
         };
         Ok(())
     }
