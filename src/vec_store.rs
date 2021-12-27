@@ -143,13 +143,13 @@ fn test_store() -> Result<()> {
         Err(error) => panic!("Unexpected error {:?}", error),
     }
 
-    tuple_store.write(&Tuple::builder().add_integer(5).build());
-    tuple_store.write(&Tuple::builder().add_integer(2).build());
+    tuple_store.write(&Tuple::builder().integer(5).build());
+    tuple_store.write(&Tuple::builder().integer(2).build());
 
     assert_eq!(2, tuple_store.len());
     assert_eq!(2, tuple_store.tuple_count());
 
-    match tuple_store.read(&Tuple::builder().add_integer(2).build())? {
+    match tuple_store.read(&Tuple::builder().integer(2).build())? {
         Some(_tuple) => (),
         None => panic!("No tuple found"),
     }
@@ -157,7 +157,7 @@ fn test_store() -> Result<()> {
     assert_eq!(2, tuple_store.len());
     assert_eq!(2, tuple_store.tuple_count());
 
-    match tuple_store.take(&Tuple::builder().add_integer(5).build())? {
+    match tuple_store.take(&Tuple::builder().integer(5).build())? {
         Some(_tuple) => (),
         None => panic!("No tuple found"),
     }

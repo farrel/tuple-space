@@ -22,7 +22,7 @@ fn main() {
     let writer_thread: JoinHandle<Result<()>> = thread::spawn(move || {
         let sleep = time::Duration::from_millis(100);
         for i in 0..100 {
-            let tuple = Tuple::builder().add_integer(i).add_integer(i).build();
+            let tuple = Tuple::builder().integer(i).integer(i).build();
             writer_tuple_space.write(&tuple)?;
             thread::sleep(sleep);
         }
@@ -36,13 +36,13 @@ fn main() {
     let adder_thread: JoinHandle<Result<()>> = thread::spawn(move || {
         // Template tuple with two Integer wild card elements.
         let adder_template = Tuple::builder()
-            .add_integer_type()
-            .add_integer_type()
+            .any_integer()
+            .any_integer()
             .build();
         let sleep = time::Duration::from_millis(110);
         while let Ok(Some(tuple)) = adder_tuple_space.take(&adder_template) {
             if let (Types::Integer(num_1), Types::Integer(num_2)) = (&tuple[0], &tuple[1]) {
-                let sum_tuple = Tuple::builder().add_integer(num_1 + num_2).build();
+                let sum_tuple = Tuple::builder().integer(num_1 + num_2).build();
                 adder_tuple_space.write(&sum_tuple)?;
             }
             thread::sleep(sleep);
@@ -52,7 +52,7 @@ fn main() {
 
     // Printer thread that removes single elemen integer tuples and prints them to stdout.
     let printer_thread: JoinHandle<Result<()>> = thread::spawn(move || {
-        let printer_template = Tuple::builder().add_integer_type().build();
+        let printer_template = Tuple::builder().any_integer().build();
         let sleep = time::Duration::from_millis(120);
         while let Ok(Some(tuple)) = print_tuple_space.take(&printer_template) {
             if let Types::Integer(num) = &tuple[0] {

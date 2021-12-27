@@ -19,7 +19,7 @@ fn main() {
         let writer_sleep = time::Duration::from_millis(100);
 
         for i in 0..100 {
-            let tuple = Tuple::builder().add_integer(1).add_integer(i).build();
+            let tuple = Tuple::builder().integer(1).integer(i).build();
             println!("Writer 1: Wrote: {:?}", tuple);
             writer_tuple_space.write(&tuple)?;
             thread::sleep(writer_sleep);
@@ -35,7 +35,7 @@ fn main() {
     let reader_thread: JoinHandle<Result<()>> = thread::spawn(move || {
         println!("Spawning Reader");
         let mut num_tuples = 0;
-        let template = Tuple::builder().add_any().add_any().build();
+        let template = Tuple::builder().any().any().build();
         let reader_sleep = time::Duration::from_millis(500);
 
         while let Some(tuple) = reader_tuple_space.read(&template)? {
@@ -53,8 +53,8 @@ fn main() {
         println!("Spawning Taker");
         let mut num_tuples = 0;
         let template = Tuple::builder()
-            .add_integer_type()
-            .add_integer_type()
+            .any_integer()
+            .any_integer()
             .build();
         let taker_sleep = time::Duration::from_millis(110);
 
@@ -74,7 +74,7 @@ fn main() {
         let writer_sleep = time::Duration::from_millis(100);
 
         for i in 0..100 {
-            let tuple = Tuple::builder().add_integer(2).add_integer(i).build();
+            let tuple = Tuple::builder().integer(2).integer(i).build();
             println!("Writer 2: Wrote: {:?}", tuple);
             writer_tuple_space.write(&tuple)?;
             thread::sleep(writer_sleep);

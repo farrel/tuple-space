@@ -74,14 +74,14 @@ fn test_space() -> Result<()> {
 
     let mut tuple_space = Space::<VecStore>::default();
 
-    tuple_space.write(&Tuple::builder().add_integer(5).build());
-    tuple_space.write(&Tuple::builder().add_integer(2).build());
+    tuple_space.write(&Tuple::builder().integer(5).build());
+    tuple_space.write(&Tuple::builder().integer(2).build());
 
     assert_eq!(2, tuple_space.len());
 
     let mut thread_tuple_space = tuple_space.clone();
     let test_thread = thread::spawn(move || {
-        match thread_tuple_space.read(&Tuple::builder().add_integer(2).build()) {
+        match thread_tuple_space.read(&Tuple::builder().integer(2).build()) {
             Ok(Some(tuple)) => (),
             _ => panic!("No tuple found"),
         }
@@ -89,7 +89,7 @@ fn test_space() -> Result<()> {
 
     assert_eq!(2, tuple_space.len());
 
-    let exact_template = Tuple::builder().add_integer(5).build();
+    let exact_template = Tuple::builder().integer(5).build();
     let wildcard_template = Tuple::builder().add_integer_type().build();
 
     match tuple_space.take(&exact_template)? {
