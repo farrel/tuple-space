@@ -137,7 +137,7 @@ fn test_store() -> Result<()> {
 
     let mut tuple_store = VecStore::builder().compact_margin(0.85).build();
 
-    match tuple_store.write(&Tuple::builder().add_integer_type().build()) {
+    match tuple_store.write(&Tuple::builder().any_integer().build()) {
         Err(Error::NonConcreteTuple(_)) => (),
         Ok(_) => panic!("Ok not expected"),
         Err(error) => panic!("Unexpected error {:?}", error),
@@ -165,7 +165,7 @@ fn test_store() -> Result<()> {
     assert_eq!(1, tuple_store.len());
     assert_eq!(1, tuple_store.tuple_count());
 
-    match tuple_store.take(&Tuple::builder().add_integer_type().build())? {
+    match tuple_store.take(&Tuple::builder().any_integer().build())? {
         Some(_tuple) => (),
         None => panic!("No tuple found"),
     }
@@ -173,7 +173,7 @@ fn test_store() -> Result<()> {
     assert_eq!(0, tuple_store.len());
     assert_eq!(0, tuple_store.tuple_count());
 
-    match tuple_store.take(&Tuple::builder().add_integer_type().build())? {
+    match tuple_store.take(&Tuple::builder().any_integer().build())? {
         Some(_tuple) => panic!("Tuple found"),
         None => (),
     }

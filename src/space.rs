@@ -17,7 +17,7 @@ use std::sync::{Arc, Mutex};
 /// let mut space = Space::<VecStore>::default();
 /// let mut space_clone = space.clone();
 ///
-/// let tuple = Tuple::builder().add_integer(1).build();
+/// let tuple = Tuple::builder().integer(1).build();
 ///
 /// space.write(&tuple);
 /// space_clone.write(&tuple);
@@ -90,7 +90,7 @@ fn test_space() -> Result<()> {
     assert_eq!(2, tuple_space.len());
 
     let exact_template = Tuple::builder().integer(5).build();
-    let wildcard_template = Tuple::builder().add_integer_type().build();
+    let wildcard_template = Tuple::builder().any_integer().build();
 
     match tuple_space.take(&exact_template)? {
         Some(tuple) => (),
