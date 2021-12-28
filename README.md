@@ -59,7 +59,7 @@ fn main() {
         Ok(())
     });
 
-    // Printer thread that removes single elemen integer tuples and prints them to stdout.
+    // Printer thread that removes single element integer tuples and prints them to stdout.
     let printer_thread: JoinHandle<Result<()>> = thread::spawn(move || {
         let printer_template = Tuple::builder().add_integer_type().build();
         let sleep = time::Duration::from_millis(120);
@@ -80,7 +80,7 @@ fn main() {
 ```
 
 
-## License
+## License (3-Clause BSD License)
 
 Copyright 2021 Farrel Lifson
 
