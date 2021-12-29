@@ -21,8 +21,8 @@ use std::sync::{Arc, Mutex};
 ///
 ///   space.write(&tuple);
 ///   space_clone.write(&tuple);
-///   println!("Tuples stored: {}", space.len()?);      // -> 2
-///   println!("Tuples stored: {}", space_clone.len()?); // -> 2
+///   println!("Tuples stored: {}", space.size()?);      // -> 2
+///   println!("Tuples stored: {}", space_clone.size()?); // -> 2
 ///   Ok(())
 /// }
 /// ```
@@ -42,8 +42,8 @@ impl<S: Store> Default for Space<S> {
 }
 
 impl<S: Store> Store for Space<S> {
-    fn len(&self) -> Result<usize> {
-        Ok(self.store.lock()?.len()?)
+    fn size(&self) -> Result<usize> {
+        Ok(self.store.lock()?.size()?)
     }
 
     fn read(&self, template: &Tuple) -> Result<Option<Tuple>> {
@@ -75,7 +75,7 @@ fn test_space() -> Result<()> {
     tuple_space.write(&Tuple::builder().integer(5).build());
     tuple_space.write(&Tuple::builder().integer(2).build());
 
-    assert_eq!(2, tuple_space.len()?);
+    assert_eq!(2, tuple_space.size()?);
 
     let mut thread_tuple_space = tuple_space.clone();
     let test_thread = thread::spawn(move || {
@@ -85,7 +85,7 @@ fn test_space() -> Result<()> {
         }
     });
 
-    assert_eq!(2, tuple_space.len()?);
+    assert_eq!(2, tuple_space.size()?);
 
     let exact_template = Tuple::builder().integer(5).build();
     let wildcard_template = Tuple::builder().any_integer().build();
@@ -95,14 +95,14 @@ fn test_space() -> Result<()> {
         None => panic!("No tuple found"),
     }
 
-    assert_eq!(1, tuple_space.len()?);
+    assert_eq!(1, tuple_space.size()?);
 
     match tuple_space.take(&wildcard_template)? {
         Some(tuple) => (),
         None => panic!("No tuple found"),
     }
 
-    assert_eq!(0, tuple_space.len()?);
+    assert_eq!(0, tuple_space.size()?);
 
     match tuple_space.take(&wildcard_template)? {
         Some(tuple) => panic!("Tuple found"),
