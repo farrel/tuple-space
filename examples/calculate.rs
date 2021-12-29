@@ -11,7 +11,7 @@ use tuple_space::types::Types;
 use tuple_space::vec_store::VecStore;
 
 fn main() {
-    // Create a tuple space withe a VecStore tuple store.
+    // Create a tuple space with a VecStore tuple store.
     let mut writer_tuple_space = Space::<VecStore>::default();
     // Create clones of the tuple space. The underlying VecStore is shared in a
     // Arc<Mutex<VecStore>> and will the shared between the clones.

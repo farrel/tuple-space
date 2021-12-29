@@ -20,10 +20,10 @@ use tuple_space::types::Types;
 use tuple_space::vec_store::VecStore;
 
 fn main() {
-    // Create a tuple space withe a VecStore tuple store.
+    // Create a tuple space with a VecStore tuple store.
     let mut writer_tuple_space = Space::<VecStore>::default();
     // Create clones of the tuple space. The underlying VecStore is shared in a
-    // Arc<Mutexex<VecStore>>
+    // Arc<Mutex<VecStore>>
     let mut adder_tuple_space = writer_tuple_space.clone();
     let mut print_tuple_space = writer_tuple_space.clone();
 
