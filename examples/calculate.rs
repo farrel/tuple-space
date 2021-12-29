@@ -35,10 +35,7 @@ fn main() {
     // space.
     let adder_thread: JoinHandle<Result<()>> = thread::spawn(move || {
         // Template tuple with two Integer wild card elements.
-        let adder_template = Tuple::builder()
-            .any_integer()
-            .any_integer()
-            .build();
+        let adder_template = Tuple::builder().any_integer().any_integer().build();
         let sleep = time::Duration::from_millis(110);
         while let Ok(Some(tuple)) = adder_tuple_space.take(&adder_template) {
             if let (Types::Integer(num_1), Types::Integer(num_2)) = (&tuple[0], &tuple[1]) {
