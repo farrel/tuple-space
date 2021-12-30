@@ -1,6 +1,6 @@
 pub mod error;
+pub mod mutex_store;
 pub mod result;
-pub mod space;
 pub mod store;
 pub mod tuple;
 pub mod types;

@@ -9,39 +9,39 @@ use std::sync::{Arc, Mutex};
 /// The internal tuple store is encased in an [Arc]<[Mutex]<[Store]>> making the [Space] thread
 /// safe across clones.
 /// ```rust
-/// use tuple_space::space::Space;
+/// use tuple_space::mutex_store::MutexStore;
 /// use tuple_space::tuple::Tuple;
 /// use tuple_space::vec_store::VecStore;
 /// use tuple_space::store::Store;
 ///
 /// fn main() -> tuple_space::result::Result<()>{
-///   let mut space = Space::<VecStore>::default();
-///   let mut space_clone = space.clone();
+///   let mut store = MutexStore::<VecStore>::default();
+///   let mut store_clone = store.clone();
 ///   let tuple = Tuple::builder().integer(1).build();
 ///
-///   space.write(&tuple);
-///   space_clone.write(&tuple);
-///   println!("Tuples stored: {}", space.size()?);      // -> 2
-///   println!("Tuples stored: {}", space_clone.size()?); // -> 2
+///   store.write(&tuple);
+///   store_clone.write(&tuple);
+///   println!("Tuples stored: {}", store.size()?);      // -> 2
+///   println!("Tuples stored: {}", store_clone.size()?); // -> 2
 ///   Ok(())
 /// }
 /// ```
 #[derive(Clone)]
-pub struct Space<S: Store> {
+pub struct MutexStore<S: Store> {
     store: Arc<Mutex<S>>,
 }
 
-impl<S: Store> Space<S> {}
+impl<S: Store> MutexStore<S> {}
 
-impl<S: Store> Default for Space<S> {
-    fn default() -> Space<S> {
-        Space {
+impl<S: Store> Default for MutexStore<S> {
+    fn default() -> MutexStore<S> {
+        MutexStore {
             store: Arc::new(Mutex::new(S::default())),
         }
     }
 }
 
-impl<S: Store> Store for Space<S> {
+impl<S: Store> Store for MutexStore<S> {
     fn size(&self) -> Result<usize> {
         Ok(self.store.lock()?.size()?)
     }
@@ -70,7 +70,7 @@ fn test_space() -> Result<()> {
     use crate::vec_store::VecStore;
     use std::thread;
 
-    let mut tuple_space = Space::<VecStore>::default();
+    let mut tuple_space = MutexStore::<VecStore>::default();
 
     tuple_space.write(&Tuple::builder().integer(5).build());
     tuple_space.write(&Tuple::builder().integer(2).build());
