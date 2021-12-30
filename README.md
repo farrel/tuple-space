@@ -51,7 +51,7 @@ fn main() {
         let sleep = time::Duration::from_millis(110);
         while let Ok(Some(tuple)) = adder_tuple_space.take(&adder_template) {
             if let (Types::Integer(num_1), Types::Integer(num_2)) = (&tuple[0], &tuple[1]) {
-                let sum_tuple = Tuple::builder().add_integer(num_1 + num_2).build();
+                let sum_tuple = Tuple::builder().integer(num_1 + num_2).build();
                 adder_tuple_space.write(&sum_tuple)?;
             }
             thread::sleep(sleep);
