@@ -31,7 +31,7 @@ fn main() {
 
     thread::sleep(time::Duration::from_millis(200));
 
-    // Adder tread that finds and removes a tuple with two integers, and writes their sum back into the tuple
+    // Adder thread that finds and removes a tuple with two integers, and writes their sum back into the tuple
     // space.
     let adder_thread: JoinHandle<Result<()>> = thread::spawn(move || {
         // Template tuple with two Integer wild card elements.
