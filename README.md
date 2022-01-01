@@ -4,6 +4,8 @@
 
 A tuple space is a method for coordinating data between different processes in an asynchronous manner. Processes write tuples of data to the tuple space and then read or remove data from the tuple space using a tuple as template to match against.
 
+This API is useful for intra program communication. To communicate between separate programs (via HTTP) you can use [tuple-space-server](http://github.com/farrel/tuple-space-server) and [tuple-space-client](http://github.com/farrel/tuple-space-client) which are based on this API.
+
 # Supported Types
 
 The following types are currently supported as elements of tuples:
