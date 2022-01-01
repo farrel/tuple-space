@@ -4,6 +4,15 @@
 
 A tuple space is a method for coordinating data between different processes in an asynchronous manner. Processes write tuples of data to the tuple space and then read or remove data from the tuple space using a tuple as template to match against.
 
+# Supported Types
+
+The types currently supported are:
+
+* boolean
+* f64
+* i64
+* String
+
 ## Example
 
 ```rust
@@ -56,7 +65,7 @@ fn main() {
         Ok(())
     });
 
-    // Printer thread that removes single elemen integer tuples and prints them to stdout.
+    // Printer thread that removes single element integer tuples and prints them to stdout.
     let printer_thread: JoinHandle<Result<()>> = thread::spawn(move || {
         let printer_template = Tuple::builder().any_integer().build();
         let sleep = time::Duration::from_millis(120);
