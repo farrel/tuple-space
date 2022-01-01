@@ -6,7 +6,7 @@ A tuple space is a method for coordinating data between different processes in a
 
 # Supported Types
 
-The types currently supported are:
+The following types are currently supported as elements of tuples:
 
 * boolean
 * f64
