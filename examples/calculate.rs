@@ -60,7 +60,13 @@ fn main() {
         Ok(())
     });
 
-    writer_thread.join();
-    adder_thread.join();
-    printer_thread.join();
+    if let Err(_) = writer_thread.join() {
+        panic!("Writer panic")
+    };
+    if let Err(_) = adder_thread.join() {
+        panic!("Adder panic")
+    };
+    if let Err(_) = printer_thread.join() {
+        panic!("Printer panic")
+    };
 }

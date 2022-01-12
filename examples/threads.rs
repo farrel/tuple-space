@@ -11,7 +11,7 @@ use tuple_space::vec_store::VecStore;
 
 fn main() {
     println!("Starting");
-    let mut mutex_store = MutexStore::<VecStore>::default();
+    let mutex_store = MutexStore::<VecStore>::default();
 
     let mut writer_tuple_space = mutex_store.clone();
     let writer_1_thread: JoinHandle<Result<()>> = thread::spawn(move || {
@@ -31,7 +31,7 @@ fn main() {
 
     thread::sleep(time::Duration::from_millis(200));
 
-    let mut reader_mutex_store = mutex_store.clone();
+    let reader_mutex_store = mutex_store.clone();
     let reader_thread: JoinHandle<Result<()>> = thread::spawn(move || {
         println!("Spawning Reader");
         let mut num_tuples = 0;
