@@ -43,7 +43,7 @@ impl<S: Store> Default for MutexStore<S> {
 
 impl<S: Store> Store for MutexStore<S> {
     fn size(&self) -> Result<usize> {
-        Ok(self.store.lock()?.size()?)
+        self.store.lock()?.size()
     }
 
     fn read(&self, template: &Tuple) -> Result<Option<Tuple>> {

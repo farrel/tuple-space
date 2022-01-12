@@ -9,12 +9,16 @@ pub struct Tuple {
 impl Tuple {
     /// Returns a [TupleBuilder]
     pub fn builder() -> TupleBuilder {
-        TupleBuilder::new()
+        TupleBuilder::default()
     }
 
     /// The number of elements in the tuple.
     pub fn len(&self) -> usize {
         self.tuple.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.tuple.len() == 0
     }
 
     /// A tuple is `concrete` if all it's tuples are not wild card [Types].
@@ -40,15 +44,12 @@ impl std::fmt::Display for Tuple {
     }
 }
 
+#[derive(Default)]
 pub struct TupleBuilder {
     tuple: Vec<Types>,
 }
 
 impl TupleBuilder {
-    pub fn new() -> Self {
-        Self { tuple: Vec::new() }
-    }
-
     pub fn build(self) -> Tuple {
         let TupleBuilder { tuple: inner } = self;
 

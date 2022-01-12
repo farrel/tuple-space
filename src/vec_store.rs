@@ -47,13 +47,10 @@ impl VecStore {
         let mut index = 0;
         let inner_len = self.inner.len();
         while index < inner_len {
-            match self.inner[index] {
-                Some(ref tuple) => {
-                    if template == tuple {
-                        return Some(index);
-                    }
+            if let Some(ref tuple) = self.inner[index] {
+                if template == tuple {
+                    return Some(index);
                 }
-                None => (),
             }
             index += 1;
         }
@@ -99,7 +96,7 @@ impl Store for VecStore {
             Some(ref index) => {
                 let tuple = self.inner[*index].take();
                 self.tuple_count -= 1;
-                return Ok(tuple);
+                Ok(tuple)
             }
             None => Ok(None),
         }
@@ -128,6 +125,12 @@ impl VecStoreBuilder {
             compact_margin,
             ..Default::default()
         }
+    }
+}
+
+impl Default for VecStoreBuilder {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

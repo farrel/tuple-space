@@ -42,14 +42,10 @@ impl Types {
     /// Will return true if the enum is not one of the following variants: [Types::Any],
     /// [Types::AnyBoolean], [Types::AnyInteger], [Types::AnyFloat], [Types::AnyString].
     pub fn is_concrete(&self) -> bool {
-        match self {
-            Types::Any
-            | Types::AnyBoolean
-            | Types::AnyInteger
-            | Types::AnyFloat
-            | Types::AnyString => false,
-            _ => true,
-        }
+        !matches!(
+            self,
+            Types::Any | Types::AnyBoolean | Types::AnyInteger | Types::AnyFloat | Types::AnyString,
+        )
     }
 }
 
@@ -61,7 +57,7 @@ impl std::fmt::Display for Types {
             Types::Boolean(boolean) => write!(formatter, "{}", boolean)?,
             Types::AnyInteger => write!(formatter, "Integer?")?,
             Types::Integer(integer) => write!(formatter, "{}", integer)?,
-            Types::AnyFloat => write!(formatter, "{}", "Float?")?,
+            Types::AnyFloat => write!(formatter, "Float?")?,
             Types::Float(float) => write!(formatter, "{}", float)?,
             Types::AnyString => write!(formatter, "String?")?,
             Types::String(string) => write!(formatter, "\"{}\"", string)?,
