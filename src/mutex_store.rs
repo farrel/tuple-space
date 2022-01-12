@@ -72,18 +72,21 @@ fn test_space() -> Result<()> {
 
     let mut tuple_space = MutexStore::<VecStore>::default();
 
-    tuple_space.write(&Tuple::builder().integer(5).build());
-    tuple_space.write(&Tuple::builder().integer(2).build());
+    tuple_space.write(&Tuple::builder().integer(5).build())?;
+    tuple_space.write(&Tuple::builder().integer(2).build())?;
 
     assert_eq!(2, tuple_space.size()?);
 
-    let mut thread_tuple_space = tuple_space.clone();
+    let thread_tuple_space = tuple_space.clone();
     let test_thread = thread::spawn(move || {
         match thread_tuple_space.read(&Tuple::builder().integer(2).build()) {
-            Ok(Some(tuple)) => (),
+            Ok(Some(_tuple)) => (),
             _ => panic!("No tuple found"),
         }
     });
+    if let Err(err) = test_thread.join() {
+        panic!("{:?}", err);
+    }
 
     assert_eq!(2, tuple_space.size()?);
 
@@ -91,24 +94,23 @@ fn test_space() -> Result<()> {
     let wildcard_template = Tuple::builder().any_integer().build();
 
     match tuple_space.take(&exact_template)? {
-        Some(tuple) => (),
+        Some(_tuple) => (),
         None => panic!("No tuple found"),
     }
 
     assert_eq!(1, tuple_space.size()?);
 
     match tuple_space.take(&wildcard_template)? {
-        Some(tuple) => (),
+        Some(_tuple) => (),
         None => panic!("No tuple found"),
     }
 
     assert_eq!(0, tuple_space.size()?);
 
     match tuple_space.take(&wildcard_template)? {
-        Some(tuple) => panic!("Tuple found"),
+        Some(_tuple) => panic!("Tuple found"),
         None => (),
     }
 
-    test_thread.join();
     Ok(())
 }
