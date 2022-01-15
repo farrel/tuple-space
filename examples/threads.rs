@@ -81,10 +81,18 @@ fn main() {
         Ok(())
     });
 
-    writer_1_thread.join();
-    writer_2_thread.join();
-    taker_thread.join();
-    reader_thread.join();
+    if let Err(_) = writer_1_thread.join() {
+        panic!("Writer 1 panic")
+    };
+    if let Err(_) = writer_2_thread.join() {
+        panic!("Writer 2 panic")
+    };
+    if let Err(_) = taker_thread.join() {
+        panic!("Taker panic")
+    };
+    if let Err(_) = reader_thread.join() {
+        panic!("Reader panic")
+    };
 
     println!("Finished");
 }

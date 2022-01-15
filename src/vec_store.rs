@@ -146,8 +146,8 @@ fn test_store() -> Result<()> {
         Err(error) => panic!("Unexpected error {:?}", error),
     }
 
-    tuple_store.write(&Tuple::builder().integer(5).build());
-    tuple_store.write(&Tuple::builder().integer(2).build());
+    tuple_store.write(&Tuple::builder().integer(5).build())?;
+    tuple_store.write(&Tuple::builder().integer(2).build())?;
 
     assert_eq!(2, tuple_store.size()?);
     assert_eq!(2, tuple_store.tuple_count());
