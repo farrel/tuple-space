@@ -93,8 +93,8 @@ impl Store for VecStore {
 
     fn take(&mut self, template: &Tuple) -> Result<Option<Tuple>> {
         match self.index_of(template) {
-            Some(ref index) => {
-                let tuple = self.inner[*index].take();
+            Some(index) => {
+                let tuple = self.inner[index].take();
                 self.tuple_count -= 1;
                 Ok(tuple)
             }

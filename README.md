@@ -1,4 +1,4 @@
-# tuple-space - Tuple Spaces for rust
+# tuple-space - Simple Tuple Spaces for rust
 
 # What is a Tuple Space
 
