@@ -2,6 +2,7 @@ use crate::store::Store;
 use crate::tuple::Tuple;
 use serde::{Deserialize, Serialize};
 
+/// Error type
 #[derive(Debug, Serialize, Deserialize)]
 pub enum Error {
     MutexPoisonError,

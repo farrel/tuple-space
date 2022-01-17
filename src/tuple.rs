@@ -17,6 +17,7 @@ impl Tuple {
         self.tuple.len()
     }
 
+    /// `true` if the tuple size is 0, `false` otherwise
     pub fn is_empty(&self) -> bool {
         self.tuple.len() == 0
     }

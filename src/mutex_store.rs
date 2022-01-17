@@ -3,7 +3,7 @@ use crate::store::Store;
 use crate::tuple::Tuple;
 use std::sync::{Arc, Mutex};
 
-/// A [MutexStore] is a thread safe store that uses another tuple store as internal
+/// A [MutexStore] is a thread safe Tuple store wrapper that uses another tuple store as internal
 /// storage.
 ///
 /// The internal tuple store is encased in an [Arc]<[Mutex]<dyn impl [Store]>> making the [MutexStore] thread

@@ -7,8 +7,9 @@ use crate::tuple::Tuple;
 ///
 /// Tuples are stored as [Option]<[Tuple]> types and replaced by [None] when taken from the [Vec]. This reduces the need to constantly shift elements in the [Vec] as tuples are taken.
 ///
-/// When the margin of [Some] elements is less than [VecStore::compact_margin] share of the total number of elements in the [Vec], the [Vec] is compacted using [Vec::retain] and all the
-/// [None] elements are removed. The default value of [VecStore::compact_margin] is [DEFAULT_COMPACT_MARGIN].
+/// When the margin of [Some] elements is less than `compact_margin` of the total number of elements stored, the underlying [Vec] is compacted using [Vec::retain] and all the
+/// [None] elements are removed. The default value of `compact_margin` is [DEFAULT_COMPACT_MARGIN] and can be overwritten on initialisation.
+
 #[derive(Clone)]
 pub struct VecStore {
     inner: Vec<Option<Tuple>>,
