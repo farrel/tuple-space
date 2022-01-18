@@ -52,9 +52,9 @@ pub struct TupleBuilder {
 
 impl TupleBuilder {
     pub fn build(self) -> Tuple {
-        let TupleBuilder { tuple: inner } = self;
+        let TupleBuilder { tuple } = self;
 
-        Tuple { tuple: inner }
+        Tuple { tuple }
     }
 
     pub fn any(mut self) -> Self {

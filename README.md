@@ -8,10 +8,10 @@ This API is useful for intra-program communication. To communicate between separ
 
 ## Tuple Space Stores
 
-This API comes with two different Tuple stores. All Tuple stores are requierd to implement the Store trait.
+This API comes with two different Tuple stores. All Tuple stores are requierd to implement the `Store` trait.
 
 * `VecStore` - A simple store that stores tuples in a Vec. The Vec is resized when the margin of occupied elements falls below a certain ratio.
-* `MutexStore` - This store uses another store as underlying storage, but it is wrapped in `Arc<Mutex>`. Clones of this store can be used across threads or async processes.
+* `MutexStore` - This store uses another store as underlying storage, but it is wrapped in `Arc<Mutex>`. Clones of this store can be used across threads or async processes safely.
 
 ## Supported Types
 
