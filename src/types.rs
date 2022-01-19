@@ -22,9 +22,10 @@ pub enum Types {
 }
 
 impl Types {
-    /// Tests whehter two types satisfy each other. If first_comparison is true, then
-    fn satisfy(&self, rhs: &Types, first_comparison: bool) -> bool {
-        match (self, rhs) {
+    /// Tests whehter two types satisfy each other. If first_comparison is true, if there is
+    /// no match between the self and other them call `other.satisfy(self, false)`.
+    fn satisfy(&self, other: &Types, first_comparison: bool) -> bool {
+        match (self, other) {
             (Types::Any, _) => true,
             (Types::AnyBoolean, Types::Boolean(_)) => true,
             (Types::Boolean(lhs), Types::Boolean(rhs)) => lhs == rhs,
@@ -34,7 +35,7 @@ impl Types {
             (Types::Float(lhs), Types::Float(rhs)) => lhs == rhs,
             (Types::AnyString, Types::String(_)) => true,
             (Types::String(lhs), Types::String(rhs)) => lhs == rhs,
-            _ if first_comparison => rhs.satisfy(self, SWAPPED_COMPARISON),
+            _ if first_comparison => other.satisfy(self, SWAPPED_COMPARISON),
             _ => false,
         }
     }
@@ -66,9 +67,19 @@ impl std::fmt::Display for Types {
     }
 }
 
+/// Implements matching allowing wildcard Types to match value Types, as well as value types to
+/// match each other.
+///
+///     use tuple_space::types::Types;
+///     Types::Any == Types::Integer(1); // => true
+///     Types::AnyInteger == Types::Integer(1); // => true
+///     Types::Integer(1) == Types::Integer(1); // => true
+///     Types::AnyString == Types::Integer(1); // => false
+///     Types::AnyString == Types::String(String::from("String")); // => true
+///     Types::String(String::from("String")) == Types::AnyString;  // => true
 impl PartialEq for Types {
-    fn eq(&self, rhs: &Types) -> bool {
-        self.satisfy(rhs, FIRST_COMPARISON)
+    fn eq(&self, other: &Types) -> bool {
+        self.satisfy(other, FIRST_COMPARISON)
     }
 }
 
