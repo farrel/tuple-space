@@ -71,12 +71,15 @@ impl std::fmt::Display for Types {
 /// match each other.
 ///
 ///     use tuple_space::types::Types;
+///
+///     string = String::from("String");
 ///     Types::Any == Types::Integer(1); // => true
+///     Types::Any == Types::String(string); // => true
 ///     Types::AnyInteger == Types::Integer(1); // => true
 ///     Types::Integer(1) == Types::Integer(1); // => true
 ///     Types::AnyString == Types::Integer(1); // => false
-///     Types::AnyString == Types::String(String::from("String")); // => true
-///     Types::String(String::from("String")) == Types::AnyString;  // => true
+///     Types::AnyString == Types::String(string); // => true
+///     Types::String(string) == Types::AnyString;  // => true
 impl PartialEq for Types {
     fn eq(&self, other: &Types) -> bool {
         self.satisfy(other, FIRST_COMPARISON)
