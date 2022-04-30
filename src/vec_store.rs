@@ -1,4 +1,4 @@
-use crate::error::Error;
+use crate::query_tuple::QueryTuple;
 use crate::result::Result;
 use crate::store::Store;
 use crate::tuple::Tuple;
@@ -44,12 +44,12 @@ impl VecStore {
         VecStoreBuilder::new()
     }
 
-    fn index_of(&self, template: &Tuple) -> Option<usize> {
+    fn index_of(&self, query_tuple: &QueryTuple) -> Option<usize> {
         let mut index = 0;
         let inner_len = self.inner.len();
         while index < inner_len {
             if let Some(ref tuple) = self.inner[index] {
-                if template == tuple {
+                if query_tuple == tuple {
                     return Some(index);
                 }
             }
@@ -74,26 +74,22 @@ impl Store for VecStore {
         Ok(self.tuple_count)
     }
 
-    fn read(&self, template: &Tuple) -> Result<Option<Tuple>> {
-        match self.index_of(template) {
+    fn read(&self, query_tuple: &QueryTuple) -> Result<Option<Tuple>> {
+        match self.index_of(query_tuple) {
             Some(index) => Ok(self.inner[index].clone()),
             None => Ok(None),
         }
     }
 
     fn write(&mut self, tuple: &Tuple) -> Result<()> {
-        if !tuple.is_concrete() {
-            return Err(Error::NonConcreteTuple(tuple.clone()));
-        }
-
         self.compact();
         self.inner.push(Some(tuple.clone()));
         self.tuple_count += 1;
         Ok(())
     }
 
-    fn take(&mut self, template: &Tuple) -> Result<Option<Tuple>> {
-        match self.index_of(template) {
+    fn take(&mut self, query_tuple: &QueryTuple) -> Result<Option<Tuple>> {
+        match self.index_of(query_tuple) {
             Some(index) => {
                 let tuple = self.inner[index].take();
                 self.tuple_count -= 1;
@@ -136,16 +132,8 @@ impl Default for VecStoreBuilder {
 }
 
 #[test]
-fn test_store() -> Result<()> {
-    use crate::error::Error;
-
+fn test_vec_store() -> Result<()> {
     let mut tuple_store = VecStore::builder().compact_margin(0.85).build();
-
-    match tuple_store.write(&Tuple::builder().any_integer().build()) {
-        Err(Error::NonConcreteTuple(_)) => (),
-        Ok(_) => panic!("Ok not expected"),
-        Err(error) => panic!("Unexpected error {:?}", error),
-    }
 
     tuple_store.write(&Tuple::builder().integer(5).build())?;
     tuple_store.write(&Tuple::builder().integer(2).build())?;
@@ -153,7 +141,7 @@ fn test_store() -> Result<()> {
     assert_eq!(2, tuple_store.size()?);
     assert_eq!(2, tuple_store.tuple_count());
 
-    match tuple_store.read(&Tuple::builder().integer(2).build())? {
+    match tuple_store.read(&QueryTuple::builder().integer(2).build())? {
         Some(_tuple) => (),
         None => panic!("No tuple found"),
     }
@@ -161,7 +149,7 @@ fn test_store() -> Result<()> {
     assert_eq!(2, tuple_store.size()?);
     assert_eq!(2, tuple_store.tuple_count());
 
-    match tuple_store.take(&Tuple::builder().integer(5).build())? {
+    match tuple_store.take(&QueryTuple::builder().integer(5).build())? {
         Some(_tuple) => (),
         None => panic!("No tuple found"),
     }
@@ -169,7 +157,7 @@ fn test_store() -> Result<()> {
     assert_eq!(1, tuple_store.size()?);
     assert_eq!(1, tuple_store.tuple_count());
 
-    match tuple_store.take(&Tuple::builder().any_integer().build())? {
+    match tuple_store.take(&QueryTuple::builder().any_integer().build())? {
         Some(_tuple) => (),
         None => panic!("No tuple found"),
     }
@@ -177,7 +165,7 @@ fn test_store() -> Result<()> {
     assert_eq!(0, tuple_store.size()?);
     assert_eq!(0, tuple_store.tuple_count());
 
-    match tuple_store.take(&Tuple::builder().any_integer().build())? {
+    match tuple_store.take(&QueryTuple::builder().any_integer().build())? {
         Some(_tuple) => panic!("Tuple found"),
         None => (),
     }

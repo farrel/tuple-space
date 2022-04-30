@@ -1,3 +1,4 @@
+use crate::query_tuple::QueryTuple;
 use crate::result::Result;
 use crate::store::Store;
 use crate::tuple::Tuple;
@@ -46,17 +47,16 @@ impl<S: Store> Store for MutexStore<S> {
         self.store.lock()?.size()
     }
 
-    fn read(&self, template: &Tuple) -> Result<Option<Tuple>> {
-        self.store.lock()?.read(template)
-    }
-
     fn write(&mut self, tuple: &Tuple) -> Result<()> {
-        self.store.lock()?.write(tuple)?;
-        Ok(())
+        Ok(self.store.lock()?.write(tuple)?)
     }
 
-    fn take(&mut self, template: &Tuple) -> Result<Option<Tuple>> {
-        match self.store.lock()?.take(template)? {
+    fn read(&self, query_tuple: &QueryTuple) -> Result<Option<Tuple>> {
+        self.store.lock()?.read(query_tuple)
+    }
+
+    fn take(&mut self, query_tuple: &QueryTuple) -> Result<Option<Tuple>> {
+        match self.store.lock()?.take(query_tuple)? {
             Some(tuple) => Ok(Some(tuple)),
             None => Ok(None),
         }
@@ -64,7 +64,7 @@ impl<S: Store> Store for MutexStore<S> {
 }
 
 #[test]
-fn test_space() -> Result<()> {
+fn test_mutex_store() -> Result<()> {
     use crate::store::Store;
     use crate::tuple::Tuple;
     use crate::vec_store::VecStore;
@@ -79,7 +79,7 @@ fn test_space() -> Result<()> {
 
     let thread_tuple_space = tuple_space.clone();
     let test_thread = thread::spawn(move || {
-        match thread_tuple_space.read(&Tuple::builder().integer(2).build()) {
+        match thread_tuple_space.read(&QueryTuple::builder().integer(2).build()) {
             Ok(Some(_tuple)) => (),
             _ => panic!("No tuple found"),
         }
@@ -90,24 +90,24 @@ fn test_space() -> Result<()> {
 
     assert_eq!(2, tuple_space.size()?);
 
-    let exact_template = Tuple::builder().integer(5).build();
-    let wildcard_template = Tuple::builder().any_integer().build();
+    let exact_query_tuple = QueryTuple::builder().integer(5).build();
+    let wildcard_query_tuple = QueryTuple::builder().any_integer().build();
 
-    match tuple_space.take(&exact_template)? {
+    match tuple_space.take(&exact_query_tuple)? {
         Some(_tuple) => (),
         None => panic!("No tuple found"),
     }
 
     assert_eq!(1, tuple_space.size()?);
 
-    match tuple_space.take(&wildcard_template)? {
+    match tuple_space.take(&wildcard_query_tuple)? {
         Some(_tuple) => (),
         None => panic!("No tuple found"),
     }
 
     assert_eq!(0, tuple_space.size()?);
 
-    match tuple_space.take(&wildcard_template)? {
+    match tuple_space.take(&wildcard_query_tuple)? {
         Some(_tuple) => panic!("Tuple found"),
         None => (),
     }

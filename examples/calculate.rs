@@ -4,6 +4,7 @@ use std::thread::JoinHandle;
 use std::{thread, time};
 
 use tuple_space::mutex_store::MutexStore;
+use tuple_space::query_tuple::QueryTuple;
 use tuple_space::result::Result;
 use tuple_space::store::Store;
 use tuple_space::tuple::Tuple;
@@ -35,9 +36,9 @@ fn main() {
     // space.
     let adder_thread: JoinHandle<Result<()>> = thread::spawn(move || {
         // Template tuple with two Integer wild card elements.
-        let adder_template = Tuple::builder().any_integer().any_integer().build();
+        let adder_query_tuple = QueryTuple::builder().any_integer().any_integer().build();
         let sleep = time::Duration::from_millis(110);
-        while let Ok(Some(tuple)) = adder_mutex_store.take(&adder_template) {
+        while let Ok(Some(tuple)) = adder_mutex_store.take(&adder_query_tuple) {
             if let (Types::Integer(num_1), Types::Integer(num_2)) = (&tuple[0], &tuple[1]) {
                 let sum_tuple = Tuple::builder().integer(num_1 + num_2).build();
                 adder_mutex_store.write(&sum_tuple)?;
@@ -49,9 +50,9 @@ fn main() {
 
     // Printer thread that removes single elemen integer tuples and prints them to stdout.
     let printer_thread: JoinHandle<Result<()>> = thread::spawn(move || {
-        let printer_template = Tuple::builder().any_integer().build();
+        let printer_query_tuple = QueryTuple::builder().any_integer().build();
         let sleep = time::Duration::from_millis(120);
-        while let Ok(Some(tuple)) = print_mutex_store.take(&printer_template) {
+        while let Ok(Some(tuple)) = print_mutex_store.take(&printer_query_tuple) {
             if let Types::Integer(num) = &tuple[0] {
                 println!("Printer: {}", num);
             }

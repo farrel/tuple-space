@@ -4,6 +4,7 @@ use std::thread::JoinHandle;
 use std::{thread, time};
 
 use tuple_space::mutex_store::MutexStore;
+use tuple_space::query_tuple::QueryTuple;
 use tuple_space::result::Result;
 use tuple_space::store::Store;
 use tuple_space::tuple::Tuple;
@@ -35,10 +36,10 @@ fn main() {
     let reader_thread: JoinHandle<Result<()>> = thread::spawn(move || {
         println!("Spawning Reader");
         let mut num_tuples = 0;
-        let template = Tuple::builder().any().any().build();
+        let query_tuple = QueryTuple::builder().any().any().build();
         let reader_sleep = time::Duration::from_millis(500);
 
-        while let Some(tuple) = reader_mutex_store.read(&template)? {
+        while let Some(tuple) = reader_mutex_store.read(&query_tuple)? {
             println!("Reader: Read: {:?}", tuple);
             num_tuples += 1;
             thread::sleep(reader_sleep);
@@ -52,10 +53,10 @@ fn main() {
     let taker_thread: JoinHandle<Result<()>> = thread::spawn(move || {
         println!("Spawning Taker");
         let mut num_tuples = 0;
-        let template = Tuple::builder().any_integer().any_integer().build();
+        let query_tuple = QueryTuple::builder().any_integer().any_integer().build();
         let taker_sleep = time::Duration::from_millis(110);
 
-        while let Some(tuple) = taker_mutex_store.take(&template)? {
+        while let Some(tuple) = taker_mutex_store.take(&query_tuple)? {
             println!("Taker: Took: {:?}", tuple);
             num_tuples += 1;
             thread::sleep(taker_sleep);

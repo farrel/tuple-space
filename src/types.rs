@@ -1,20 +1,7 @@
 use serde::{Deserialize, Serialize};
 
-const FIRST_COMPARISON: bool = true;
-const SWAPPED_COMPARISON: bool = false;
-
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum Types {
-    /// Wildcard matching any variant
-    Any,
-    /// Wildcard type matching any [Types::Boolean] variant
-    AnyBoolean,
-    /// Wildcard type matching any [Types::Integer] variant
-    AnyInteger,
-    /// Wildcard type matching any [Types::Float] variant
-    AnyFloat,
-    /// Wildcard type matching any [Types::String] variant
-    AnyString,
     Boolean(bool),
     Integer(i64),
     Float(f64),
@@ -24,43 +11,23 @@ pub enum Types {
 impl Types {
     /// Tests whehter two types satisfy each other. If first_comparison is true, if there is
     /// no match between the self and other them call `other.satisfy(self, false)`.
-    fn satisfy(&self, other: &Types, first_comparison: bool) -> bool {
+    fn satisfy(&self, other: &Types) -> bool {
         match (self, other) {
-            (Types::Any, _) => true,
-            (Types::AnyBoolean, Types::Boolean(_)) => true,
             (Types::Boolean(lhs), Types::Boolean(rhs)) => lhs == rhs,
-            (Types::AnyInteger, Types::Integer(_)) => true,
             (Types::Integer(lhs), Types::Integer(rhs)) => lhs == rhs,
-            (Types::AnyFloat, Types::Float(_)) => true,
             (Types::Float(lhs), Types::Float(rhs)) => lhs == rhs,
-            (Types::AnyString, Types::String(_)) => true,
             (Types::String(lhs), Types::String(rhs)) => lhs == rhs,
-            _ if first_comparison => other.satisfy(self, SWAPPED_COMPARISON),
             _ => false,
         }
-    }
-
-    /// Will return true if the enum is not one of the following variants: [Types::Any],
-    /// [Types::AnyBoolean], [Types::AnyInteger], [Types::AnyFloat], [Types::AnyString].
-    pub fn is_concrete(&self) -> bool {
-        !matches!(
-            self,
-            Types::Any | Types::AnyBoolean | Types::AnyInteger | Types::AnyFloat | Types::AnyString,
-        )
     }
 }
 
 impl std::fmt::Display for Types {
     fn fmt(&self, formatter: &mut std::fmt::Formatter) -> std::result::Result<(), std::fmt::Error> {
         match self {
-            Types::Any => write!(formatter, "*")?,
-            Types::AnyBoolean => write!(formatter, "Boolean?")?,
             Types::Boolean(boolean) => write!(formatter, "{}", boolean)?,
-            Types::AnyInteger => write!(formatter, "Integer?")?,
             Types::Integer(integer) => write!(formatter, "{}", integer)?,
-            Types::AnyFloat => write!(formatter, "Float?")?,
             Types::Float(float) => write!(formatter, "{}", float)?,
-            Types::AnyString => write!(formatter, "String?")?,
             Types::String(string) => write!(formatter, "\"{}\"", string)?,
         };
         Ok(())
@@ -69,20 +36,9 @@ impl std::fmt::Display for Types {
 
 /// Implements matching allowing wildcard Types to match value Types, as well as value types to
 /// match each other.
-///
-///     use tuple_space::types::Types;
-///
-///     string = String::from("String");
-///     Types::Any == Types::Integer(1); // => true
-///     Types::Any == Types::String(string); // => true
-///     Types::AnyInteger == Types::Integer(1); // => true
-///     Types::Integer(1) == Types::Integer(1); // => true
-///     Types::AnyString == Types::Integer(1); // => false
-///     Types::AnyString == Types::String(string); // => true
-///     Types::String(string) == Types::AnyString;  // => true
 impl PartialEq for Types {
     fn eq(&self, other: &Types) -> bool {
-        self.satisfy(other, FIRST_COMPARISON)
+        self.satisfy(other)
     }
 }
 
@@ -117,10 +73,4 @@ fn test_compare() {
     assert_eq!(s1, s1_copy);
     assert_ne!(s1, s2);
     assert_ne!(s1, f1);
-
-    assert_eq!(i1, Types::Any);
-    assert_eq!(b1, Types::AnyBoolean);
-    assert_eq!(i1, Types::AnyInteger);
-    assert_eq!(f1, Types::AnyFloat);
-    assert_eq!(s1, Types::AnyString);
 }
