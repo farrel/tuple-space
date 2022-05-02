@@ -1,5 +1,5 @@
 [package]
-name = "tuple-space"
+name = "tuple-store"
 version = "0.1.0"
 edition = "2021"
 
