@@ -1,5 +1,5 @@
-use crate::query_types::QueryTypes;
 use crate::tuple::Tuple;
+use crate::types::QueryTypes;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

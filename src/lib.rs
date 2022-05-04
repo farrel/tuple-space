@@ -5,7 +5,6 @@ pub mod error;
 /// Thread safe Tuple Space store wrapper
 pub mod mutex_store;
 pub mod query_tuple;
-pub mod query_types;
 /// Tuple Space specific Result
 pub mod result;
 /// Trait required to be a Tuple store

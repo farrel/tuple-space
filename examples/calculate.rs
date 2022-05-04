@@ -1,15 +1,15 @@
-extern crate tuple_space;
+extern crate tuple_store;
 
 use std::thread::JoinHandle;
 use std::{thread, time};
 
-use tuple_space::mutex_store::MutexStore;
-use tuple_space::query_tuple::QueryTuple;
-use tuple_space::result::Result;
-use tuple_space::store::Store;
-use tuple_space::tuple::Tuple;
-use tuple_space::types::Types;
-use tuple_space::vec_store::VecStore;
+use tuple_store::mutex_store::MutexStore;
+use tuple_store::query_tuple::QueryTuple;
+use tuple_store::result::Result;
+use tuple_store::store::Store;
+use tuple_store::tuple::Tuple;
+use tuple_store::types::Types;
+use tuple_store::vec_store::VecStore;
 
 fn main() {
     // Create a tuple space with a VecStore tuple store.

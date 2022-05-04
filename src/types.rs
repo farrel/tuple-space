@@ -1,43 +1,80 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub enum Types {
-    Boolean(bool),
-    Integer(i64),
-    Float(f64),
-    String(String),
-}
-
-impl Types {
-    /// Tests whehter two types satisfy each other. If first_comparison is true, if there is
-    /// no match between the self and other them call `other.satisfy(self, false)`.
-    fn satisfy(&self, other: &Types) -> bool {
-        match (self, other) {
-            (Types::Boolean(lhs), Types::Boolean(rhs)) => lhs == rhs,
-            (Types::Integer(lhs), Types::Integer(rhs)) => lhs == rhs,
-            (Types::Float(lhs), Types::Float(rhs)) => lhs == rhs,
-            (Types::String(lhs), Types::String(rhs)) => lhs == rhs,
-            _ => false,
+macro_rules! tuple_types {
+    ($(($type:ty, $name:ident,$exact:ident,$any:ident)),+) => {
+        #[derive(Debug, Serialize, Deserialize, Clone)]
+        pub enum Types {
+            $(
+                $name($type),
+            )*
         }
-    }
+
+        impl Types {
+            fn satisfy(&self, other: &Types) -> bool {
+                match (self, other) {
+                    $(
+                        (Self::$name(lhs), Self::$name(rhs)) => lhs == rhs,
+                    )*
+                        _ => false,
+                }
+            }
+        }
+
+        impl std::fmt::Display for Types {
+            fn fmt(&self, formatter: &mut std::fmt::Formatter) -> std::result::Result<(), std::fmt::Error> {
+                match self {
+                    $(
+                        Self::$name(inner_value) => write!(formatter, "{}", inner_value)?,
+                    )*
+                };
+                Ok(())
+            }
+        }
+
+
+        #[derive(Debug, Serialize, Deserialize, Clone)]
+        pub enum QueryTypes {
+            Any,
+            $(
+                $exact($type),
+                $any,
+            )*
+        }
+
+
+        impl QueryTypes {
+            fn satisfy(&self, other: &Types) -> bool {
+                match(self, other) {
+                    (Self::Any, _) => true,
+                    $(
+                        (Self::$any, Types::$name(_)) => true,
+                        (Self::$any, _) => false,
+                    )*
+                    $(
+                        (Self::$exact(lhs), Types::$name(rhs)) => lhs == rhs,
+                        (Self::$exact(_), _) => false,
+                    )*
+                }
+            }
+        }
+    };
 }
 
-impl std::fmt::Display for Types {
-    fn fmt(&self, formatter: &mut std::fmt::Formatter) -> std::result::Result<(), std::fmt::Error> {
-        match self {
-            Types::Boolean(boolean) => write!(formatter, "{}", boolean)?,
-            Types::Integer(integer) => write!(formatter, "{}", integer)?,
-            Types::Float(float) => write!(formatter, "{}", float)?,
-            Types::String(string) => write!(formatter, "\"{}\"", string)?,
-        };
-        Ok(())
-    }
-}
+tuple_types![
+    (bool, Boolean, ExactBoolean, AnyBoolean),
+    (i64, Integer, ExactInteger, AnyInteger),
+    (f64, Float, ExactFloat, AnyFloat),
+    (String, String, ExactString, AnyString)
+];
 
-/// Implements matching allowing wildcard Types to match value Types, as well as value types to
-/// match each other.
-impl PartialEq for Types {
+impl PartialEq<Types> for QueryTypes {
     fn eq(&self, other: &Types) -> bool {
+        self.satisfy(other)
+    }
+}
+
+impl PartialEq for Types {
+    fn eq(&self, other: &Self) -> bool {
         self.satisfy(other)
     }
 }
@@ -73,4 +110,26 @@ fn test_compare() {
     assert_eq!(s1, s1_copy);
     assert_ne!(s1, s2);
     assert_ne!(s1, f1);
+}
+
+#[test]
+fn test_query_compare() {
+    let boolean = Types::Boolean(true);
+    let integer = Types::Integer(1);
+    let float = Types::Float(1.0);
+    let string = Types::String(String::from("S1"));
+
+    assert_eq!(QueryTypes::Any, boolean);
+    assert_eq!(QueryTypes::Any, integer);
+    assert_eq!(QueryTypes::Any, float);
+    assert_eq!(QueryTypes::Any, string);
+    assert_eq!(QueryTypes::AnyBoolean, boolean);
+    assert_eq!(QueryTypes::AnyInteger, integer);
+    assert_eq!(QueryTypes::AnyFloat, float);
+    assert_eq!(QueryTypes::AnyString, string);
+
+    assert_eq!(QueryTypes::ExactString(String::from("S1")), string);
+    assert_eq!(QueryTypes::ExactInteger(1), integer);
+    assert_eq!(QueryTypes::ExactFloat(1.0), float);
+    assert_eq!(QueryTypes::ExactBoolean(true), boolean);
 }

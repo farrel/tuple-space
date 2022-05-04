@@ -10,12 +10,12 @@ use std::sync::{Arc, Mutex};
 /// The internal tuple store is encased in an [Arc]<[Mutex]<T>> making the [MutexStore] thread
 /// safe across clones.
 /// ```rust
-/// use tuple_space::mutex_store::MutexStore;
-/// use tuple_space::tuple::Tuple;
-/// use tuple_space::vec_store::VecStore;
-/// use tuple_space::store::Store;
+/// use tuple_store::mutex_store::MutexStore;
+/// use tuple_store::tuple::Tuple;
+/// use tuple_store::vec_store::VecStore;
+/// use tuple_store::store::Store;
 ///
-/// fn main() -> tuple_space::result::Result<()>{
+/// fn main() -> tuple_store::result::Result<()>{
 ///   let mut store = MutexStore::<VecStore>::default();
 ///   let mut store_clone = store.clone();
 ///   let tuple = Tuple::builder().integer(1).build();
