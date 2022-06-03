@@ -56,10 +56,7 @@ impl<S: Store> Store for MutexStore<S> {
     }
 
     fn take(&mut self, query_tuple: &QueryTuple) -> Result<Option<Tuple>> {
-        match self.store.lock()?.take(query_tuple)? {
-            Some(tuple) => Ok(Some(tuple)),
-            None => Ok(None),
-        }
+        self.store.lock()?.take(query_tuple)
     }
 }
 

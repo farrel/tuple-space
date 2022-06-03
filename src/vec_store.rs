@@ -41,21 +41,17 @@ impl VecStore {
     /// Returns a [VecStoreBuilder] so that the initial parameters of the [VecStore] can be
     /// modified.
     pub fn builder() -> VecStoreBuilder {
-        VecStoreBuilder::new()
+        VecStoreBuilder::default()
     }
 
     fn index_of(&self, query_tuple: &QueryTuple) -> Option<usize> {
-        let mut index = 0;
-        let inner_len = self.inner.len();
-        while index < inner_len {
-            if let Some(ref tuple) = self.inner[index] {
-                if query_tuple == tuple {
-                    return Some(index);
-                }
+        self.inner.iter().position(|vec_element| {
+            if let Some(tuple) = vec_element {
+                query_tuple == tuple
+            } else {
+                false
             }
-            index += 1;
-        }
-        None
+        })
     }
 }
 
@@ -105,12 +101,6 @@ pub struct VecStoreBuilder {
 }
 
 impl VecStoreBuilder {
-    pub fn new() -> Self {
-        Self {
-            compact_margin: DEFAULT_COMPACT_MARGIN,
-        }
-    }
-
     pub fn compact_margin(mut self, compact_margin: f64) -> Self {
         self.compact_margin = compact_margin;
         self
@@ -127,7 +117,9 @@ impl VecStoreBuilder {
 
 impl Default for VecStoreBuilder {
     fn default() -> Self {
-        Self::new()
+        Self {
+            compact_margin: DEFAULT_COMPACT_MARGIN,
+        }
     }
 }
 
